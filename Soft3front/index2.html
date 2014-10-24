@@ -1,0 +1,106 @@
+<html>
+
+    <head>
+        <title>SSS:Scrum Support Site</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
+        <script type="text/javascript" src="controlador2.js"></script>
+    </head>
+
+<body ng-app>
+
+<div ng-controller="ControladorScrum2">
+{{mensaje}}
+<a href="" ng-click="scarOpen()">SELECCION DE CARACTERISTICAS</a>
+<br></br>
+<a href="" ng-click="deftaOpen()">DEFINIR TAREAS</a>
+
+<div id="seleccionDeCaracteristicas" style="display:{{scar}}" >
+  <hr></hr>
+
+  <a href="" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
+  
+  <ul ng-repeat="pro in proyectos">
+  <li><a href="" ng-click="fetchCarreras(pro.nombre)">
+  {{pro.nombre}}
+  </a></li>
+  </ul>
+  
+<div id="carrerasproye" style="display:{{carrs}}">
+  Carreras para el proyecto seleccionado [{{proyectoActual}}]
+  <ul ng-repeat="pro in carreras">
+  <li><a href="" ng-click="fetchReqs(pro.numero)">
+  {{pro.numero}}
+  </a></li>
+  </ul>
+</div>  <!--Div carrs-->
+
+<div id="reqsProye" style="display:{{carrs}}">
+  <div id="reqss" style="display:{{reqss}}">
+  <hr></hr>
+  Requisitos para el proyecto seleccionado [{{proyectoActual}}]
+  <ul ng-repeat="pro in requisitos">
+  <li><a href="" ng-click="addReq(pro.nombre)">
+  {{pro.nombre}}
+  </a></li>
+  </ul>
+
+  Requisitos para la carrera seleccionada [{{carreraActual}}]
+  <ul ng-repeat="pro in requisitosCarrera">
+  <li><a href="" ng-click="fetchReqs(pro.nombre)">
+  {{pro}}
+  </a></li>
+  </ul>
+  </div> <!--div reqss-->
+
+</div>
+</div>  <!--Div scar-->
+
+<div id="seleccionDefinirTareas" style="display:{{defta}}" >
+  <hr></hr>
+  <a href="" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
+    
+    <ul ng-repeat="pro in proyectos">
+    <li><a href="" ng-click="fetchCarreras(pro.nombre)">
+    {{pro.nombre}}
+    </a></li>
+    </ul>
+
+    <div id="carrerasproye" style="display:{{carrs}}">
+    Carreras para el proyecto seleccionado [{{proyectoActual}}]
+    <ul ng-repeat="pro in carreras">
+    <li><a href="" ng-click="fetchTareas(pro.numero)">
+    {{pro.numero}}
+    </a></li>
+    </ul>
+
+
+    </div>  <!--Div carrs-->
+
+    <div id="carrerasproye" style="display:{{carrs}}">
+    Tareas para la carrera seleccionada: {{carreraActual}}
+    <ul ng-repeat="pro in tareasCarrera">
+    <li><a href="">
+    {{pro}}
+    </a></li>
+    </ul>
+    
+    <div id="addta" style="display:{{at}}">
+      <!--Para agregar una tarea-->
+      <br></br>
+      <form ng-submit="addTarea()">
+	  <label> Nombre Tarea </label>
+	  <input type="text" ng-model="nomTarea" placeholder="Identificador de la tarea">
+	  <br> </br>
+	  <label> Peso </label>
+	  <input type="text" ng-model="pesoTarea" placeholder="Peso">
+	  <br> </br>
+	  <button type="submit"> Agregar </button>
+      </form>  
+    </div> <!--Div add tarea-->
+
+</div> <!--Div defta-->
+</div> <!--Div controller-->
+
+</body>
+
+</html>

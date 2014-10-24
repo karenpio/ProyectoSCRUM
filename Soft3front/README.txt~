@@ -1,0 +1,8 @@
+-Para probar deben:
+	1.Instalen este plugin en su chrome. (Es porque como el .js y .html no estan en servidor
+	entonces para decirle a chrome que puede buscar recursos javascript de la computadora localmente)
+	https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi
+	Al instalarlo en su chrome al lado de la barra les sale un cuadradito rojo que dice CORS. Le dan y se
+	se pone verde y ahi si pueden abrir el .html relajados.
+
+	2.-Bueno tienen que tener ejecutando el backend en netbeans :)

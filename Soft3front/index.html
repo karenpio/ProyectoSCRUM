@@ -1,0 +1,87 @@
+<html>
+
+    <head>
+        <title>SSS:Scrum Support Site</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
+        <script type="text/javascript" src="controlador.js"></script>
+    </head>
+
+<body ng-app>
+
+<div ng-controller="ControladorScrum">
+
+  <!--Mensaje a ser mostrado luego de una ejecucion exitosa de crear proyecto-->
+  <div id="mensajeExito" style="display:{{mensajeExito}}" >
+    <p> Su transaccion se ha completado satisfactoriamente </p>
+    <a href="" ng-click="volverHome()"> Volver </a>
+  </div> <!--Div mensaje de exito-->
+
+  <div id="home" style="display:{{home}}">
+    <h2> <a ng-click="abrirCreacionProyectos()" href=""> Creacion de nuevos Proyectos </a> </h2>
+
+    <!--  Seccion en la cual se crea un proyecto: se llena el formulario correspondiente
+    y se envia la info.-->
+    <div id="CreacionProyectos" style="display:{{parteCreacion}}">
+      <form ng-submit="CrearProyecto()">
+	<label> Nombre del proyecto </label>
+	<input type="text" ng-model="nombreProyecto" placeholder="Nombre del Proyecto">
+	<br></br>
+
+
+	<label> Descripcion/comentarios sobre el proyecto </label>
+	<br></br>
+	<textarea ng-model="descrProyecto" ROWS=3 COLS=30 placeholder="Descripcion breve del proyecto/producto" > </textarea>
+
+	<br></br>
+	<button type="submit"> Crear Proyecto </button>
+      </form>
+     <a href="" ng-click="volverHome()">  Volver </a>
+    </div> <!--Div creacion de proyectos-->
+
+    <hr></hr>
+
+    <h2> <a ng-click="abrirManejoParticipantes()" href=""> Manejo de Participantes de Proyectos </a> </h2>
+
+    <!--Se abre la seccion de manejo de participantes: en la cual primero se
+    presentara la lista de proyectos que hay para gestionar.-->
+    <div id="ManejoParticipantes" style="display:{{parteManejoParticipantes}}">
+	{{mensaje}}
+	<h3> Lista de proyectos actuales: </h3>
+	<ul ng-repeat="pro in proyectos">
+	  <li><a href="" ng-click="abrirProyecto(pro.nombre)">
+	  {{pro.nombre}}
+	  </a></li>
+	</ul>
+	<a href="" ng-click="volverHome()"> Volver </a>
+    </div> <!--Div manejo de participantes-->
+
+   <!-- Seccion para agregar participantes en un proyecto dado.-->
+    <div id="AgregarParticipantes" style="display:{{parteAgregarParticipantes}}" >
+      <h3> Participantes del proyecto : {{proyectoActual.nombre}}</h3>
+      <ul>
+	<li ng-repeat="pro in proyectoActual.participantes"> {{pro.nombre}} (<a href="" ng-click="eliminarPart(pro)"> Eliminar</a>)
+	</li>
+      </ul> 
+    
+      <form ng-submit="agregarParticipante()">
+	<label> Nombre del participante </label>
+	<input type="text" ng-model="participante" placeholder="Participante a agregar">
+	<br> </br>
+	<label> Email </label>
+	<input type="text" ng-model="participanteMail" placeholder="Correo">
+	<br> </br>
+	<label> Tlf </label>
+	<input type="text" ng-model="participanteTlf" placeholder="TLF">
+	<button type="submit"> Agregar </button>
+      </form>   
+      <a href="" ng-click="volverHome()">Volver</a>
+    </div> <!--Div agregado de participantes-->
+
+  </div> <!--Div home-->
+
+
+</div> <!--Div controller-->
+
+</body>
+
+</html>

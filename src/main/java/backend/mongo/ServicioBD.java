@@ -70,9 +70,9 @@ public class ServicioBD {
 
     public BasicDBObject actualizarProyecto(JSONObject proy) {
 
-        BasicDBObject query = 
-                new BasicDBObject("nombre", 
-                            new BasicDBObject("$eq", proy.get("nombre").toString()));
+        BasicDBObject query
+                = new BasicDBObject("nombre",
+                        new BasicDBObject("$eq", proy.get("nombre").toString()));
         DBCursor proyCursor = proyecto.find(query);
         BasicDBObject proyect = (BasicDBObject) proyCursor.next();
 
@@ -128,7 +128,7 @@ public class ServicioBD {
 
         return doc;
     }
-    
+
     public JSONObject formatearJSON(DBObject obj) {
         JSONObject doc = new JSONObject(JSON.serialize(obj));
         String clean_idPart = (doc.getJSONObject("_id").get("$oid")).toString();
@@ -139,12 +139,19 @@ public class ServicioBD {
 
     public JSONObject obtenerProyecto(String projectId) {
 
-
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(projectId));
+
         DBObject doc = proyecto.findOne(query);
+
+        if (doc == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_NAME");
+            return result;
+        }
         
         return formatearJSON(doc);
+
     }
 
     //public BasicDBObject buscarProyecto(String nombre){}

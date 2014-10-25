@@ -53,6 +53,10 @@ public class Spark {
                 String projectId = request.params(":projectId");
                 JSONObject proyecto = 
                         servicioBDProyecto.obtenerProyecto(projectId);
+                
+                if (proyecto.has("error")){
+                    response.status(404);
+                }
                 return proyecto;
             }
         });
@@ -98,7 +102,8 @@ public class Spark {
 
                     doc = servicioBDProyecto.crearProyecto(proy);
                 } else {
-                    doc.put("error", "INVALIDNAME");
+                    response.status(400);
+                    doc.put("error", "INVALID_NAME");
                 }
 
                 return doc;

@@ -5,11 +5,6 @@
  */
 package com.mycompany.uniendosparkmongo;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBRef;
-import com.mongodb.util.JSON;
 import java.net.UnknownHostException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,6 +42,20 @@ public class Spark {
                 return proyectos;
             }
         });
+        
+        /* 
+         * Se obtienen los datos de un proyecto dado su _id.
+         */
+        get(new Route("/proyectos/:projectId") {
+            @Override
+            public Object handle(Request request, Response response) {
+
+                String projectId = request.params(":projectId");
+                JSONObject proyecto = 
+                        servicioBDProyecto.obtenerProyecto(projectId);
+                return proyecto;
+            }
+        });
 
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
@@ -56,18 +65,18 @@ public class Spark {
             public Object handle(Request request, Response response) {
                 String nombre = request.queryParams("nombre");
                 String descripcion = request.queryParams("descripcion");
+                
                 JSONObject doc = new JSONObject();
-
                 JSONObject proy = new JSONObject();
 
                 // Si el nombre del proyecto no existe, entonces se agrega
-                if (servicioBDProyecto.estaProyectoNombre(nombre).count() == 0) {
+                if (servicioBDProyecto.buscarNombreRepetido(nombre)) {
                     proy.put("nombre", nombre);
                     proy.put("descripcion", descripcion);
 
-                    doc = new JSONObject(JSON.serialize(servicioBDProyecto.crearProyecto(proy)));
-                    String clean_id = (doc.getJSONObject("_id").get("$oid")).toString();
-                    doc.put("_id", clean_id);
+                    doc = servicioBDProyecto.crearProyecto(proy);
+                } else {
+                    doc.put("error", "INVALIDNAME");
                 }
 
                 return doc;
@@ -79,6 +88,8 @@ public class Spark {
          agregando al participante a la lista de participantes (si la tiene) o crea una nueva 
          lista de participantes con el correo dado.
          */
+        
+        /*
         put(new Route("/asociarparticipante") {
             @Override
             public Object handle(Request request, Response response) {
@@ -109,7 +120,7 @@ public class Spark {
                  Verificar que el participante no haya sido agregado antes.
                  Se utiliza el email en vez del _id porque agregaba mucha basura,
                  esto debemos acomodarlo mas adelante y preguntarle a Ascander.
-                 */
+                 
                 if (!lista.contains(part.get("email"))) {
                     lista.add(part.get("email"));
                 }
@@ -127,10 +138,13 @@ public class Spark {
                 return actualizacion;
             }
         });
+        */
 
         /*
             Eliminar un participante dado de un proyecto
         */
+        
+        /*
         put(new Route("/desasociarparticipante") {
             @Override
             public Object handle(Request request, Response response) {
@@ -174,6 +188,7 @@ public class Spark {
 
             }
         });
+        */
 
     }
 

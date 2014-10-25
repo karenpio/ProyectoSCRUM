@@ -11,8 +11,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,7 +38,7 @@ public class ServicioBD {
             mongo = new MongoClient("localhost", 27017);
 
             // Crear la base de datos (si no existe) (Get database)
-            db = mongo.getDB("pruebaConSpark");
+            db = mongo.getDB("SCRUM");
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");
@@ -59,44 +59,41 @@ public class ServicioBD {
     /* Se crea un documento (BasicDBObject) con un nombre y descripcion y se inserta
      en la coleccion proyecto.
      */
-    public BasicDBObject crearProyecto(JSONObject proy) {
+    public JSONObject crearProyecto(JSONObject proy) {
 
         BasicDBObject doc = new BasicDBObject("nombre", proy.get("nombre"))
                 .append("descripcion", proy.get("descripcion"));
 
         proyecto.insert(doc);
-
-        return doc;
+        return formatearJSONBasic(doc);
     }
-    
+
     public BasicDBObject actualizarProyecto(JSONObject proy) {
 
-        DBCursor proyCursor = estaProyectoNombre(proy.get("nombre").toString());
+        BasicDBObject query = 
+                new BasicDBObject("nombre", 
+                            new BasicDBObject("$eq", proy.get("nombre").toString()));
+        DBCursor proyCursor = proyecto.find(query);
         BasicDBObject proyect = (BasicDBObject) proyCursor.next();
-        
+
         Object o = JSON.parse(proy.toString());
         BasicDBObject proyActualizado = (BasicDBObject) o;
 
-        
         proyecto.save(proyActualizado);
 
         //proyecto.update(proyect, proyActualizado);
-
         return proyActualizado;
     }
-    
-    
-
 
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
      Retorna true si ya existe un proyecto con el nombre dado
      */
-    public DBCursor estaProyectoNombre(String nombreProy) {
+    public Boolean buscarNombreRepetido(String nombreProy) {
         BasicDBObject query = new BasicDBObject("nombre", new BasicDBObject("$eq", nombreProy));
         DBCursor cursor = proyecto.find(query);
 
-        return cursor;
+        return (cursor.count() == 0);
 
     }
 
@@ -124,12 +121,30 @@ public class ServicioBD {
 
     }
 
-    public JSONObject limpiarID(BasicDBObject obj) {
+    public JSONObject formatearJSONBasic(BasicDBObject obj) {
         JSONObject doc = new JSONObject(JSON.serialize(obj));
         String clean_idPart = (doc.getJSONObject("_id").get("$oid")).toString();
         doc.put("_id", clean_idPart);
-        
+
         return doc;
+    }
+    
+    public JSONObject formatearJSON(DBObject obj) {
+        JSONObject doc = new JSONObject(JSON.serialize(obj));
+        String clean_idPart = (doc.getJSONObject("_id").get("$oid")).toString();
+        doc.put("_id", clean_idPart);
+
+        return doc;
+    }
+
+    public JSONObject obtenerProyecto(String projectId) {
+
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(projectId));
+        DBObject doc = proyecto.findOne(query);
+        
+        return formatearJSON(doc);
     }
 
     //public BasicDBObject buscarProyecto(String nombre){}

@@ -27,6 +27,7 @@ public class ServicioBD {
     MongoClient mongo;
     DB db;
     DBCollection proyecto;
+    DBCollection requisito;
 
     public ServicioBD() {
 
@@ -39,6 +40,9 @@ public class ServicioBD {
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");
+            
+            // Se crea la coleccion "requisito"
+            requisito = db.getCollection("requisito");
 
             System.out.println("Connecting to MongoDB@" + mongo.getAllAddress());
 
@@ -52,15 +56,31 @@ public class ServicioBD {
      */
     public BasicDBObject crearProyecto(JSONObject proy) {
         
-        
 
         BasicDBObject doc = new BasicDBObject("nombre", proy.get("nombre"))
                 .append("descripcion", proy.get("descripcion"));
+        
+        
 
         WriteResult result = proyecto.insert(doc);
 
         return doc;
     }
+    
+    
+    /* 
+        Funcion utilizada para asegurar la unicidad del nombre del proyecto
+        Retorna true si ya existe un proyecto con el nombre dado
+    */
+    public Boolean estaProyectoNombre(String nombreProy){
+        BasicDBObject query = new BasicDBObject("nombre", new BasicDBObject("$eq", nombreProy));
+        DBCursor cursor = proyecto.find(query);
+        System.out.println(cursor.itcount());
+        
+        return cursor.count() != 0;
+
+    }
+    
 
     /* Coloca en una lista todos los proyectos que estan en la BD, iterando
        sobre la coleccion con un cursor para tomar cada documento de ella.

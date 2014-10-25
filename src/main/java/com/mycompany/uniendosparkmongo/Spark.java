@@ -57,6 +57,28 @@ public class Spark {
             }
         });
 
+        /*
+            Dado un nombre de proyecto pasado por url, buscamos todos los requisitos
+            que estan asociados a el y devolvemos una lista de Json
+        */
+        
+        /*
+        get(new Route("/listarrequisitosproyecto/:nombreProyecto") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String nombreProy = new String(request.params(":nombreProyecto"));
+
+                DBCursor proyectosCursor = servicioBDProyecto.estaProyectoNombre(nombreProy);
+                BasicDBObject proy = (BasicDBObject) proyectosCursor.next();
+
+                
+                BasicDBList listaReq= (BasicDBList) proy.get("requisitos");
+
+                return listaReq;
+            }
+        });
+        */
+
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */
@@ -153,7 +175,6 @@ public class Spark {
                 BasicDBList lista;
                 BasicDBObject actualizacion = null;
                 BasicDBObject proy = new BasicDBObject();
-                
 
                 // Lamamos a la funcion estaProyectoNombre para tomar el proyecto que queremos 
                 // Tomamos el proyecto al cual le agregaremos el participante

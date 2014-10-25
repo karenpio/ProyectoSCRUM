@@ -10,6 +10,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.BasicDBList;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
@@ -30,6 +31,7 @@ public class ServicioBD {
     DBCollection proyecto;
     DBCollection requisito;
     DBCollection participante;
+    DBCollection carrera;
 
     public ServicioBD() {
 
@@ -48,6 +50,9 @@ public class ServicioBD {
 
             // Se crea la coleccion "participante"
             participante = db.getCollection("participante");
+            
+            // Se crea la coleccion "carrera"
+            carrera = db.getCollection("carrera");
 
             System.out.println("Connecting to MongoDB@" + mongo.getAllAddress());
 
@@ -68,6 +73,8 @@ public class ServicioBD {
 
         return doc;
     }
+    
+    
     
     public BasicDBObject actualizarProyecto(JSONObject proy) {
 
@@ -149,6 +156,27 @@ public class ServicioBD {
 
                 resultados.put(doc);
             }
+        } finally {
+            cursor.close();
+        }
+        return resultados;
+    }
+    /* 
+        Obtener la identificacion de las carreras asociadas a un proyecto
+    */
+    public JSONObject obtenerIdCarreras(JSONObject proy){
+        
+        BasicDBObject campos = new BasicDBObject("carreras",1);
+        
+        DBCursor cursor = estaProyectoNombre(proy.get("nombre").toString());
+        
+        JSONObject resultados = new JSONObject();
+        try {
+            while(cursor.hasNext()){
+                DBObject c = cursor.next();
+                BasicDBList carreras = (BasicDBList) c.get("carreras");
+                resultados.put("carreras",carreras);         
+            } 
         } finally {
             cursor.close();
         }

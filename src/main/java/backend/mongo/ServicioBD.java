@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package backend.mongo;
 
 import com.mongodb.BasicDBList;
@@ -536,9 +531,15 @@ public class ServicioBD {
 
         try {
             while (cursor.hasNext()) {
-                JSONObject doc = new JSONObject(JSON.serialize(cursor.next()));
-                String clean_id = (doc.getJSONObject("_id").get("$oid")).toString();
+                JSONObject doc = new JSONObject();
+                JSONObject consultado = new JSONObject(JSON.serialize(cursor.next()));
+                String clean_id = (consultado.getJSONObject("_id").get("$oid")).toString();
                 doc.put("_id", clean_id);
+                doc.put("descripcion", consultado.getString("descripcion"));
+                doc.put("nombre", consultado.getString("nombre"));
+                if (consultado.has("participantes")){
+                    doc.put("participantes", consultado.getJSONArray("participantes"));
+                }
 
                 resultados.put(doc);
             }

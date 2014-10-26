@@ -66,7 +66,7 @@ public class ServicioBD {
                 .append("descripcion", proy.get("descripcion"));
 
         proyecto.insert(doc);
-        return formatearJSONBasic(doc);
+        return formatearJSON(doc);
     }
 
     /* 
@@ -81,38 +81,9 @@ public class ServicioBD {
 
     }
 
-    /* Se crea un documento (BasicDBObject) con email, nombre y telefono y se inserta
-     en la coleccion participante.
-     */
-    public BasicDBObject crearParticipante(JSONObject part) {
-
-        BasicDBObject doc = new BasicDBObject("email", part.get("email"))
-                .append("nombre", part.get("nombre")).append("telefono", part.get("telefono"));
-
-        participante.insert(doc);
-
-        return doc;
-    }
-
-    /* 
-     Unicidad del email del participante  
-     */
-    public DBCursor estaEmailParticipante(String emailPart) {
-        BasicDBObject query = new BasicDBObject("email", new BasicDBObject("$eq", emailPart));
-        DBCursor cursor = participante.find(query);
-
-        return cursor;
-
-    }
-
-    public JSONObject formatearJSONBasic(BasicDBObject obj) {
-        JSONObject doc = new JSONObject(JSON.serialize(obj));
-        String clean_idPart = (doc.getJSONObject("_id").get("$oid")).toString();
-        doc.put("_id", clean_idPart);
-
-        return doc;
-    }
-
+    // Esta funcion le da un formato distinto al _id del objeto
+    // atrapado por el driver de Java y ademas convierte en JSON
+    // el resultado.
     public JSONObject formatearJSON(DBObject obj) {
         JSONObject doc = new JSONObject(JSON.serialize(obj));
         String clean_idPart = (doc.getJSONObject("_id").get("$oid")).toString();
@@ -121,6 +92,7 @@ public class ServicioBD {
         return doc;
     }
 
+    // Obtiene el proyecto utilizando el _id.
     public JSONObject obtenerProyecto(String projectId) {
 
         BasicDBObject query = new BasicDBObject();
@@ -138,6 +110,8 @@ public class ServicioBD {
 
     }
 
+    // Se asocia un email a la lista de participantes
+    // Por ahora sin chequear si el usuario existe.
     public JSONObject asociarParticipante(String email, String projectId) {
 
         BasicDBList lista;
@@ -173,7 +147,7 @@ public class ServicioBD {
 
     }
 
-    //public BasicDBObject buscarProyecto(String nombre){}
+
     /* Coloca en una lista todos los proyectos que estan en la BD, iterando
      sobre la coleccion con un cursor para tomar cada documento de ella.
      */

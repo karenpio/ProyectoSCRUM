@@ -27,6 +27,7 @@ public class ServicioBD {
     DBCollection requisito;
     DBCollection participante;
     DBCollection carrera;
+    DBCollection tarea;
 
     public ServicioBD() {
 
@@ -48,6 +49,9 @@ public class ServicioBD {
             
             // Se crea la coleccion "carrera"
             carrera = db.getCollection("carrera");
+            
+            // Se crea la coleccion "tarea"
+            tarea = db.getCollection("tarea");
 
             System.out.println("Connecting to MongoDB@" + mongo.getAllAddress());
 
@@ -129,8 +133,8 @@ public class ServicioBD {
 
     }
     
-        /*
-        Obtener un reqisito dado su id 
+    /*
+        Obtener una carrera dado su id 
     */
     public JSONObject obtenerCarrera(String carrId) {
 
@@ -138,6 +142,26 @@ public class ServicioBD {
         query.put("_id", new ObjectId(carrId));
 
         DBObject doc = carrera.findOne(query);
+
+        if (doc == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        return formatearJSON(doc);
+
+    }
+    
+    /*
+        Obtener una tarea dado su id 
+    */
+    public JSONObject obtenerTarea(String tareaId) {
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(tareaId));
+
+        DBObject doc = tarea.findOne(query);
 
         if (doc == null) {
             JSONObject result = new JSONObject();
@@ -215,6 +239,27 @@ public class ServicioBD {
             nombresReq.add(obtenerRequisito(idReq));
         }
         JSONArray resultado = new JSONArray(nombresReq);
+        return resultado;
+        
+    }
+    
+    /*
+        Dado el id de una carrera, buscamos dicha carrera, obtenemos
+        su lista de tareas y formamos una lista de json con dichas tareas
+    */
+    public JSONArray listarTareasCarrera(String carreraId){
+        
+        JSONObject carr = obtenerCarrera(carreraId);
+
+        JSONArray listaTareasId = (JSONArray) carr.get("tareas");
+        String idTarea;
+        BasicDBList listaTarea = new BasicDBList();
+
+        for (int i = 0; i < listaTareasId.length(); i++) {
+            idTarea = listaTareasId.getJSONObject(i).get("$oid").toString();
+            listaTarea.add(obtenerTarea(idTarea));
+        }
+        JSONArray resultado = new JSONArray(listaTarea);
         return resultado;
         
     }
@@ -339,6 +384,47 @@ public class ServicioBD {
         if (!lista.contains(idReq)) {
             lista.add(idReq);
             carr.put("requisitos", lista);
+            carrera.save(carr);
+        }
+        
+        return formatearJSON(carr);
+    }
+    
+    
+    /*
+        Asociar una tarea a una carrera dado su ID. En carrera se tiene una
+        lista de tareas en la que adentro se tienen los objectId de todas
+        las tareas asociadas. 
+    */
+    public JSONObject asociarTareaCarrera(String carreraId, String tareaId){
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carreraId));
+        
+        DBObject carr = carrera.findOne(query);
+
+        // Se revisa si se encontro la carrera. Falta revisar el requisito
+        if (carr == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+
+        // Se revisa si la carrera ya tiene requisitos asociados.
+        if (carr.containsField("tareas")) {
+            lista = (BasicDBList) carr.get("tareas");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si la carrera ya tiene a ese requisito.
+        ObjectId idTarea = new ObjectId(tareaId);
+        if (!lista.contains(idTarea)) {
+            lista.add(idTarea);
+            carr.put("tareas", lista);
             carrera.save(carr);
         }
         

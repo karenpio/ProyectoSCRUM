@@ -109,6 +109,21 @@ public class Spark {
                 return listaReq;
             }
         });
+        
+        /*
+         Dado un id de carrera pasado por url, buscamos todos las tareas
+         que estan asociados a ella y devolvemos una lista de json de tareas
+         */
+        get(new Route("/listartareascarrera/:idCarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.params(":idCarrera");
+
+                JSONArray listaTareas = servicioBDProyecto.listarTareasCarrera(idCarr);
+
+                return listaTareas;
+            }
+        });
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */
@@ -207,6 +222,27 @@ public class Spark {
                 String idReq = request.queryParams("requisitoId");
 
                 JSONObject carrera = servicioBDProyecto.asociarRequisitoCarrera(idCarr, idReq);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                return carrera;
+
+            }
+        });
+        
+        /*
+         Dado un id de una carrera y de una tarea, se asocia dicha tarea
+         a la carrera, es decir, se anade a la lista de tareas dentro
+         de la carrera.
+        */
+        put(new Route("/asociartareacarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idTarea = request.queryParams("tareaId");
+
+                JSONObject carrera = servicioBDProyecto.asociarTareaCarrera(idCarr, idTarea);
                 if (carrera.has("error")) {
                     response.status(404);
                     return carrera;

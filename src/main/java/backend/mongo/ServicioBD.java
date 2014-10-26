@@ -13,6 +13,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -109,6 +111,53 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
+    
+    /*
+        Obtener un reqisito dado su id 
+    */
+    public JSONObject obtenerRequisito(String reqId) {
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(reqId));
+
+        DBObject doc = requisito.findOne(query);
+
+        if (doc == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        return formatearJSON(doc);
+
+    }
+    
+    /*
+        Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
+        su lista de requisitos y formamos una lista con los nombres de
+        esos requisitos
+    */
+    public BasicDBList listarRequisitosProy(String proyectoId){
+        
+        JSONObject proy = obtenerProyecto(proyectoId);
+        
+        
+        JSONArray listaReqId = (JSONArray) proy.get("requisitos");
+        System.out.println(listaReqId);
+        String idReq;
+        BasicDBList nombresReq = new BasicDBList();
+
+        for (int i = 0; i < listaReqId.length(); i++) {
+            System.out.println(listaReqId.getJSONObject(i).get("$oid"));
+            idReq = listaReqId.getJSONObject(i).get("$oid").toString();
+            nombresReq.add(obtenerRequisito(idReq).get("nombre"));
+        }
+        return nombresReq;
+        
+    }
+    
+    
+    
     
     /*
         Asociar un requisito dado su ID a un proyecto. En proyecto se tiene una

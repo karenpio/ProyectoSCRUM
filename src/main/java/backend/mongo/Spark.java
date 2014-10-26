@@ -5,6 +5,7 @@
  */
 package backend.mongo;
 
+import com.mongodb.BasicDBList;
 import java.net.UnknownHostException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -65,22 +66,19 @@ public class Spark {
          Dado un nombre de proyecto pasado por url, buscamos todos los requisitos
          que estan asociados a el y devolvemos una lista de Json
          */
-        /*
-         get(new Route("/listarrequisitosproyecto/:nombreProyecto") {
-         @Override
-         public Object handle(Request request, Response response) {
-         String nombreProy = new String(request.params(":nombreProyecto"));
-
-         DBCursor proyectosCursor = servicioBDProyecto.estaProyectoNombre(nombreProy);
-         BasicDBObject proy = (BasicDBObject) proyectosCursor.next();
-
+        get(new Route("/listarrequisitosproyecto/:idProyecto") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idProy = request.params(":idProyecto");
                 
-         BasicDBList listaReq= (BasicDBList) proy.get("requisitos");
+                
 
-         return listaReq;
-         }
-         });
-         */
+                BasicDBList listaReq = servicioBDProyecto.listarRequisitosProy(idProy);
+
+                return listaReq;
+            }
+        });
+
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */
         post(new Route("/crearproyecto") {
@@ -107,10 +105,10 @@ public class Spark {
             }
         });
         /*
-            Dado un id de proyecto y de requisito, se asocia dicho requisito
-            al proyecto, es decir, se anade a la lista de requisitos dentro
-            del proyecto.
-        */
+         Dado un id de proyecto y de requisito, se asocia dicho requisito
+         al proyecto, es decir, se anade a la lista de requisitos dentro
+         del proyecto.
+         */
         put(new Route("/asociarrequisito") {
             @Override
             public Object handle(Request request, Response response) {
@@ -166,21 +164,20 @@ public class Spark {
 
             }
         });
-        
+
         /*
-            Obtener lista de los id's de las carreras de los proyectos
-        */
-        
-        get(new Route("/obtenerIdCarreras"){
+         Obtener lista de los id's de las carreras de los proyectos
+         */
+        get(new Route("/obtenerIdCarreras") {
             @Override
             public Object handle(Request request, Response response) {
                 String nombre = request.queryParams("nombre");
                 JSONObject proy = new JSONObject();
-                proy.put("nombre" , nombre);
+                proy.put("nombre", nombre);
                 JSONObject idCarreras = servicioBDProyecto.obtenerIdCarreras(proy);
                 return idCarreras;
             }
-        
+
         });
 
     }

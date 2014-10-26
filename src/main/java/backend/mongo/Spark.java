@@ -64,14 +64,14 @@ public class Spark {
 
         /*
          Dado un id de proyecto pasado por url, buscamos todos los requisitos
-         que estan asociados a el y devolvemos una lista de nombres de requisitos
+         que estan asociados a el y devolvemos una lista de json de requisitos
          */
         get(new Route("/listarrequisitosproyecto/:idProyecto") {
             @Override
             public Object handle(Request request, Response response) {
                 String idProy = request.params(":idProyecto");
 
-                BasicDBList listaReq = servicioBDProyecto.listarRequisitosProy(idProy);
+                JSONArray listaReq = servicioBDProyecto.listarRequisitosProy(idProy);
 
                 return listaReq;
             }
@@ -79,16 +79,31 @@ public class Spark {
         
         /*
          Dado un id de proyecto pasado por url, buscamos todas las carreras
-         que estan asociados a el y devolvemos una lista de numeros de carrera
+         que estan asociados a el y devolvemos una lista de json de carreras
          */
         get(new Route("/listarcarrerasproyecto/:idProyecto") {
             @Override
             public Object handle(Request request, Response response) {
                 String idProy = request.params(":idProyecto");
 
-                BasicDBList listaCarr = servicioBDProyecto.listarCarrerasProy(idProy);
+                JSONArray listaCarr = servicioBDProyecto.listarCarrerasProy(idProy);
 
                 return listaCarr;
+            }
+        });
+        
+        /*
+         Dado un id de carrera pasado por url, buscamos todos los requisitos
+         que estan asociados a ella y devolvemos una lista de json de requisitos
+         */
+        get(new Route("/listarrequisitoscarrera/:idCarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.params(":idCarrera");
+
+                JSONArray listaReq = servicioBDProyecto.listarRequisitosCarrera(idCarr);
+
+                return listaReq;
             }
         });
 
@@ -140,7 +155,7 @@ public class Spark {
             }
         });
         
-                /*
+        /*
          Dado un id de proyecto y de requisito, se asocia dicho requisito
          al proyecto, es decir, se anade a la lista de requisitos dentro
          del proyecto.
@@ -157,6 +172,27 @@ public class Spark {
                     return proyecto;
                 }
                 return proyecto;
+
+            }
+        });
+        
+        /*
+         Dado un id de una carrera y de un requisito, se asocia dicho requisito
+         a la carrera, es decir, se anade a la lista de requisitos dentro
+         de la carrera.
+        */
+        put(new Route("/asociarrequisitocarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idReq = request.queryParams("requisitoId");
+
+                JSONObject carrera = servicioBDProyecto.asociarRequisitoCarrera(idCarr, idReq);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                return carrera;
 
             }
         });

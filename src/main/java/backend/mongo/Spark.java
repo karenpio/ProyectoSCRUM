@@ -140,7 +140,7 @@ public class Spark {
             }
         });
         
-                /*
+        /*
          Dado un id de proyecto y de requisito, se asocia dicho requisito
          al proyecto, es decir, se anade a la lista de requisitos dentro
          del proyecto.
@@ -157,6 +157,27 @@ public class Spark {
                     return proyecto;
                 }
                 return proyecto;
+
+            }
+        });
+        
+        /*
+         Dado un id de una carrera y de un requisito, se asocia dicho requisito
+         a la carrera, es decir, se anade a la lista de requisitos dentro
+         de la carrera.
+        */
+        put(new Route("/asociarrequisitocarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idReq = request.queryParams("requisitoId");
+
+                JSONObject carrera = servicioBDProyecto.asociarRequisitoCarrera(idCarr, idReq);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                return carrera;
 
             }
         });

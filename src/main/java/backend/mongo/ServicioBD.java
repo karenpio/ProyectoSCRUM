@@ -247,17 +247,23 @@ public class ServicioBD {
     */
     public JSONObject asociarRequisito(String projectId, String reqId){
         BasicDBList lista;
+        
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(projectId));
+        
+
 
         DBObject proy = proyecto.findOne(query);
+
         
-        // Se revisa si se encontro el proyecto.
+        
+        // Se revisa si se encontro el proyecto. Falta revisar los requisitos
         if (proy == null) {
             JSONObject result = new JSONObject();
             result.put("error", "INVALID_ID");
             return result;
         }
+
 
         // Se revisa si el proyecto ya tiene carreras.
         if (proy.containsField("requisitos")) {
@@ -278,6 +284,50 @@ public class ServicioBD {
         
         return formatearJSON(proy);
     }
+    
+    /*
+        Asociar un requisito a una carrera dado su ID. En carrera se tiene una
+        lista de requisitos en la que adentro se tienen los objectId de todos
+        los requisitos asociados. 
+    */
+    public JSONObject asociarRequisitoCarrera(String carreraId, String reqId){
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carreraId));
+        
+        System.out.println(query);
+
+
+        DBObject carr = carrera.findOne(query);
+
+        // Se revisa si se encontro la carrera. Falta revisar el requisito
+        if (carr == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+
+        // Se revisa si la carrera ya tiene requisitos asociados.
+        if (carr.containsField("requisitos")) {
+            lista = (BasicDBList) carr.get("requisitos");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si la carrera ya tiene a ese requisito.
+        ObjectId idReq = new ObjectId(reqId);
+        if (!lista.contains(idReq)) {
+            lista.add(idReq);
+            carr.put("requisitos", lista);
+            carrera.save(carr);
+        }
+        
+        return formatearJSON(carr);
+    }
+    
     
 
     // Se asocia un email a la lista de participantes

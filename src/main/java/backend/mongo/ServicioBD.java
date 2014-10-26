@@ -41,7 +41,7 @@ public class ServicioBD {
             mongo = new MongoClient("localhost", 27017);
 
             // Crear la base de datos (si no existe) (Get database)
-            db = mongo.getDB("SCRUM");
+            db = mongo.getDB("SCRUMKaren");
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");
@@ -76,6 +76,22 @@ public class ServicioBD {
         proyecto.insert(doc);
         return formatearJSON(doc);
     }
+    
+    /* Se crea un documento de tarea (BasicDBObject) con sus atributos y se inserta
+     en la coleccion tarea.
+     */
+    public JSONObject crearTarea(JSONObject tar) {
+
+        BasicDBObject doc = new BasicDBObject("nombre", tar.get("nombre"))
+                .append("peso", tar.get("peso"))
+                .append("estado", tar.get("estado"))
+                .append("fechaFin", tar.get("fechaFin"));
+
+        tarea.insert(doc);
+        return formatearJSON(doc);
+    }
+    
+    
 
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
@@ -405,6 +421,8 @@ public class ServicioBD {
         BasicDBList lista;
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(carreraId));
+        
+         
         
         DBObject carr = carrera.findOne(query);
 

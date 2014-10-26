@@ -65,7 +65,7 @@ public class Spark {
                     JSONArray auxList = proyecto.getJSONArray("carreras");
                     proyecto.put("carreras", limpiarListaId(auxList));
                 }
-                
+
                 return proyecto;
             }
         });
@@ -84,7 +84,7 @@ public class Spark {
                 return listaReq;
             }
         });
-        
+
         /*
          Dado un id de proyecto pasado por url, buscamos todas las carreras
          que estan asociados a el y devolvemos una lista de json de carreras
@@ -99,7 +99,7 @@ public class Spark {
                 return listaCarr;
             }
         });
-        
+
         /*
          Dado un id de carrera pasado por url, buscamos todos los requisitos
          que estan asociados a ella y devolvemos una lista de json de requisitos
@@ -114,7 +114,7 @@ public class Spark {
                 return listaReq;
             }
         });
-        
+
         /*
          Dado un id de carrera pasado por url, buscamos todos las tareas
          que estan asociados a ella y devolvemos una lista de json de tareas
@@ -155,8 +155,33 @@ public class Spark {
                 return doc;
             }
         });
-        
-        
+
+        /*
+            Se crea una tarea a partir de los datos que son suministrados.
+            Posteriormente se debe asociar tarea con carrera
+        */
+        post(new Route("/creartarea") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String nombre = request.queryParams("nombre");
+                String peso = request.queryParams("peso");
+                String estado = request.queryParams("estado");
+                String fechaFin = request.queryParams("fechaFin");
+
+                JSONObject doc;
+                JSONObject tarea = new JSONObject();
+
+                tarea.put("nombre", nombre);
+                tarea.put("peso", peso);
+                tarea.put("estado", estado);
+                tarea.put("fechaFin", fechaFin);
+
+                doc = servicioBDProyecto.crearTarea(tarea);
+
+                return doc;
+            }
+        });
+
         /*
          Dado un id de proyecto y de requisito, se asocia dicho requisito
          al proyecto, es decir, se anade a la lista de requisitos dentro
@@ -185,7 +210,7 @@ public class Spark {
 
             }
         });
-        
+
         /*
          Dado un id de proyecto y de requisito, se asocia dicho requisito
          al proyecto, es decir, se anade a la lista de requisitos dentro
@@ -214,12 +239,12 @@ public class Spark {
 
             }
         });
-        
+
         /*
          Dado un id de una carrera y de un requisito, se asocia dicho requisito
          a la carrera, es decir, se anade a la lista de requisitos dentro
          de la carrera.
-        */
+         */
         put(new Route("/asociarrequisitocarrera") {
             @Override
             public Object handle(Request request, Response response) {
@@ -235,12 +260,12 @@ public class Spark {
 
             }
         });
-        
+
         /*
          Dado un id de una carrera y de una tarea, se asocia dicha tarea
          a la carrera, es decir, se anade a la lista de tareas dentro
          de la carrera.
-        */
+         */
         put(new Route("/asociartareacarrera") {
             @Override
             public Object handle(Request request, Response response) {
@@ -313,18 +338,16 @@ public class Spark {
             }
         });
 
-
     }
-    
-    
-   public static JSONArray limpiarListaId(JSONArray lista) {
-       JSONArray result = new JSONArray();
-       JSONObject aux;
-       for (int i = 0; i < lista.length(); i++){
-           aux = (JSONObject) lista.get(i);
-           result.put(aux.get("$oid"));
-       }
-       return result;
-   }
+
+    public static JSONArray limpiarListaId(JSONArray lista) {
+        JSONArray result = new JSONArray();
+        JSONObject aux;
+        for (int i = 0; i < lista.length(); i++) {
+            aux = (JSONObject) lista.get(i);
+            result.put(aux.get("$oid"));
+        }
+        return result;
+    }
 
 }

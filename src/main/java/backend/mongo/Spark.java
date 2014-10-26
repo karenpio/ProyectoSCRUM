@@ -5,7 +5,6 @@
  */
 package backend.mongo;
 
-import com.mongodb.BasicDBList;
 import java.net.UnknownHostException;
 import org.json.JSONArray;
 import org.json.JSONObject;

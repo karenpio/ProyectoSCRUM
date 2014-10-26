@@ -157,7 +157,42 @@ public class ServicioBD {
     }
     
     
-    
+    /*
+        Asociamos Carrera a un proyecto para poder hacer puebas
+    */
+    public JSONObject asociarCarrera(String projectId, String carrId){
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(projectId));
+
+        DBObject proy = proyecto.findOne(query);
+        
+        // Se revisa si se encontro el proyecto.
+        if (proy == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si el proyecto ya tiene requisitos.
+        if (proy.containsField("carreras")) {
+            lista = (BasicDBList) proy.get("carreras");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si el proyecto ya tiene a ese requisito.
+        ObjectId idCarrera = new ObjectId(carrId);
+        if (!lista.contains(idCarrera)) {
+            lista.add(idCarrera);
+            proy.put("carreras", lista);
+            proyecto.save(proy);
+        }
+        
+        return formatearJSON(proy);
+    }
     
     /*
         Asociar un requisito dado su ID a un proyecto. En proyecto se tiene una
@@ -178,7 +213,7 @@ public class ServicioBD {
             return result;
         }
 
-        // Se revisa si el proyecto ya tiene requisitos.
+        // Se revisa si el proyecto ya tiene carreras.
         if (proy.containsField("requisitos")) {
             lista = (BasicDBList) proy.get("requisitos");
 

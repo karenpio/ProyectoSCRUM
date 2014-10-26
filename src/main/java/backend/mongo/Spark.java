@@ -70,8 +70,6 @@ public class Spark {
             @Override
             public Object handle(Request request, Response response) {
                 String idProy = request.params(":idProyecto");
-                
-                
 
                 BasicDBList listaReq = servicioBDProyecto.listarRequisitosProy(idProy);
 
@@ -104,7 +102,30 @@ public class Spark {
                 return doc;
             }
         });
+        
+        
         /*
+         Dado un id de proyecto y de requisito, se asocia dicho requisito
+         al proyecto, es decir, se anade a la lista de requisitos dentro
+         del proyecto. 
+         */
+        put(new Route("/asociarcarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idProy = request.queryParams("proyectoId");
+                String idCarr = request.queryParams("carreraId");
+
+                JSONObject proyecto = servicioBDProyecto.asociarCarrera(idProy, idCarr);
+                if (proyecto.has("error")) {
+                    response.status(404);
+                    return proyecto;
+                }
+                return proyecto;
+
+            }
+        });
+        
+                /*
          Dado un id de proyecto y de requisito, se asocia dicho requisito
          al proyecto, es decir, se anade a la lista de requisitos dentro
          del proyecto.

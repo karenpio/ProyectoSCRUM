@@ -161,7 +161,7 @@ public class ServicioBD {
         su lista de requisitos y formamos una lista con los nombres de
         esos requisitos
     */
-    public BasicDBList listarRequisitosProy(String proyectoId){
+    public JSONArray listarRequisitosProy(String proyectoId){
         
         JSONObject proy = obtenerProyecto(proyectoId);
         
@@ -172,9 +172,10 @@ public class ServicioBD {
 
         for (int i = 0; i < listaReqId.length(); i++) {
             idReq = listaReqId.getJSONObject(i).get("$oid").toString();
-            nombresReq.add(obtenerRequisito(idReq).get("nombre"));
+            nombresReq.add(obtenerRequisito(idReq));
         }
-        return nombresReq;
+        JSONArray resultado = new JSONArray(nombresReq);
+        return resultado;
         
     }
     
@@ -183,7 +184,7 @@ public class ServicioBD {
         su lista de carreras y formamos una lista con los numeros de
         esas carreras
     */
-    public BasicDBList listarCarrerasProy(String proyectoId){
+    public JSONArray listarCarrerasProy(String proyectoId){
         
         JSONObject proy = obtenerProyecto(proyectoId);
         
@@ -196,9 +197,32 @@ public class ServicioBD {
         for (int i = 0; i < listaCarrId.length(); i++) {
             System.out.println(listaCarrId.getJSONObject(i).get("$oid"));
             idCarr = listaCarrId.getJSONObject(i).get("$oid").toString();
-            numeroCarrera.add(obtenerCarrera(idCarr).get("numero"));
+            numeroCarrera.add(obtenerCarrera(idCarr));
         }
-        return numeroCarrera;
+        JSONArray resultado = new JSONArray(numeroCarrera);
+        return resultado;
+        
+    }
+    
+    /*
+        Dado el id de una carrera, buscamos dicha carrera, obtenemos
+        su lista de requisitos y formamos una lista con los nombres de
+        esos requisitos
+    */
+    public JSONArray listarRequisitosCarrera(String carreraId){
+        
+        JSONObject carr = obtenerCarrera(carreraId);
+
+        JSONArray listaReqId = (JSONArray) carr.get("requisitos");
+        String idReq;
+        BasicDBList nombresReq = new BasicDBList();
+
+        for (int i = 0; i < listaReqId.length(); i++) {
+            idReq = listaReqId.getJSONObject(i).get("$oid").toString();
+            nombresReq.add(obtenerRequisito(idReq));
+        }
+        JSONArray resultado = new JSONArray(nombresReq);
+        return resultado;
         
     }
     

@@ -147,6 +147,38 @@ public class ServicioBD {
 
     }
 
+    // Se desasocia un email a la lista de participantes
+    public JSONObject desasociarParticipante(String email, String projectId) {
+
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(projectId));
+
+        DBObject proy = proyecto.findOne(query);
+
+        // Se revisa si se encontro el proyecto.
+        if (proy == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si el proyecto ya tiene participantes.
+        if (proy.containsField("participantes")) {
+            lista = (BasicDBList) proy.get("participantes");
+            
+            if (lista.contains(email)) {
+                lista.remove(email);
+                proy.put("participantes", lista);
+                proyecto.save(proy);
+            }
+
+        }
+
+        return formatearJSON(proy);
+
+    }
+
 
     /* Coloca en una lista todos los proyectos que estan en la BD, iterando
      sobre la coleccion con un cursor para tomar cada documento de ella.

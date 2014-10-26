@@ -131,50 +131,22 @@ public class Spark {
         /*
          Eliminar un participante dado de un proyecto
          */
-        /*
-         put(new Route("/desasociarparticipante") {
-         @Override
-         public Object handle(Request request, Response response) {
-         String nombreProy = request.queryParams("nombreProyecto");
-         String email = request.queryParams("email");
-         BasicDBList lista;
-         BasicDBObject actualizacion = null;
-         BasicDBObject proy = new BasicDBObject();
+        put(new Route("/desasociarparticipante") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String nombreProy = request.queryParams("proyectoId");
+                String email = request.queryParams("email");
 
-         // Lamamos a la funcion estaProyectoNombre para tomar el proyecto que queremos 
-         // Tomamos el proyecto al cual le agregaremos el participante
-         DBCursor cursorProy = servicioBDProyecto.estaProyectoNombre(nombreProy);
-         proy = (BasicDBObject) cursorProy.next();
+                JSONObject proyecto = servicioBDProyecto.desasociarParticipante(email, nombreProy);
+                if (proyecto.has("error")) {
+                    response.status(404);
+                    return proyecto;
+                }
+                return proyecto;
 
-         // Llamamos a la funcion estaEmailParticipante para tomar el participante que queremos
-         // Tomamos el proyecto al cual le agregaremos el participante
-         DBCursor cursorPart = servicioBDProyecto.estaEmailParticipante(email);
-         BasicDBObject part = (BasicDBObject) cursorPart.next();
+            }
+        });
 
-         //System.out.println("-----------------");
-         if (proy.get("participantes") != null) {
-         //System.out.println("    -----------------");
-         lista = (BasicDBList) proy.get("participantes");
-         System.out.println(lista);
-         if (lista.contains(part.get("email"))) {
-         lista.remove(part.get("email"));
-         // Si limpiamos el id se crean dos instancias en la bd lo cual es un problema
-         // JSONObject proyDoc = servicioBDProyecto.limpiarID(proy);
-         JSONObject proyDoc = new JSONObject(JSON.serialize(proy));
-
-         // Colocamos la lista actualizada en el JSON
-         proyDoc.put("participantes", lista);
-
-         // Actualizamos la base de datos dado el JSON actualizado
-         actualizacion = servicioBDProyecto.actualizarProyecto(proyDoc);
-         }
-         }
-
-         return actualizacion;
-
-         }
-         });
-         */
     }
 
 }

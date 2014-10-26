@@ -33,6 +33,7 @@ public class ServicioBD {
     DBCollection proyecto;
     DBCollection requisito;
     DBCollection participante;
+    DBCollection carrera;
 
     public ServicioBD() {
 
@@ -51,6 +52,9 @@ public class ServicioBD {
 
             // Se crea la coleccion "participante"
             participante = db.getCollection("participante");
+            
+            // Se crea la coleccion "carrera"
+            carrera = db.getCollection("carrera");
 
             System.out.println("Connecting to MongoDB@" + mongo.getAllAddress());
 
@@ -132,6 +136,26 @@ public class ServicioBD {
 
     }
     
+        /*
+        Obtener un reqisito dado su id 
+    */
+    public JSONObject obtenerCarrera(String carrId) {
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carrId));
+
+        DBObject doc = carrera.findOne(query);
+
+        if (doc == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        return formatearJSON(doc);
+
+    }
+    
     /*
         Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
         su lista de requisitos y formamos una lista con los nombres de
@@ -143,16 +167,38 @@ public class ServicioBD {
         
         
         JSONArray listaReqId = (JSONArray) proy.get("requisitos");
-        System.out.println(listaReqId);
         String idReq;
         BasicDBList nombresReq = new BasicDBList();
 
         for (int i = 0; i < listaReqId.length(); i++) {
-            System.out.println(listaReqId.getJSONObject(i).get("$oid"));
             idReq = listaReqId.getJSONObject(i).get("$oid").toString();
             nombresReq.add(obtenerRequisito(idReq).get("nombre"));
         }
         return nombresReq;
+        
+    }
+    
+    /*
+        Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
+        su lista de carreras y formamos una lista con los numeros de
+        esas carreras
+    */
+    public BasicDBList listarCarrerasProy(String proyectoId){
+        
+        JSONObject proy = obtenerProyecto(proyectoId);
+        
+        
+        JSONArray listaCarrId = (JSONArray) proy.get("carreras");
+        System.out.println(listaCarrId);
+        String idCarr;
+        BasicDBList numeroCarrera = new BasicDBList();
+
+        for (int i = 0; i < listaCarrId.length(); i++) {
+            System.out.println(listaCarrId.getJSONObject(i).get("$oid"));
+            idCarr = listaCarrId.getJSONObject(i).get("$oid").toString();
+            numeroCarrera.add(obtenerCarrera(idCarr).get("numero"));
+        }
+        return numeroCarrera;
         
     }
     

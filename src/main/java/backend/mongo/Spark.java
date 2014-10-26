@@ -63,8 +63,8 @@ public class Spark {
         });
 
         /*
-         Dado un nombre de proyecto pasado por url, buscamos todos los requisitos
-         que estan asociados a el y devolvemos una lista de Json
+         Dado un id de proyecto pasado por url, buscamos todos los requisitos
+         que estan asociados a el y devolvemos una lista de nombres de requisitos
          */
         get(new Route("/listarrequisitosproyecto/:idProyecto") {
             @Override
@@ -74,6 +74,21 @@ public class Spark {
                 BasicDBList listaReq = servicioBDProyecto.listarRequisitosProy(idProy);
 
                 return listaReq;
+            }
+        });
+        
+        /*
+         Dado un id de proyecto pasado por url, buscamos todas las carreras
+         que estan asociados a el y devolvemos una lista de numeros de carrera
+         */
+        get(new Route("/listarcarrerasproyecto/:idProyecto") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idProy = request.params(":idProyecto");
+
+                BasicDBList listaCarr = servicioBDProyecto.listarCarrerasProy(idProy);
+
+                return listaCarr;
             }
         });
 
@@ -187,7 +202,7 @@ public class Spark {
         });
 
         /*
-         Obtener lista de los id's de las carreras de los proyectos
+         Obtener lista de los id's de las carreras de los proyectos (ERIK)
          */
         get(new Route("/obtenerIdCarreras") {
             @Override

@@ -152,32 +152,6 @@ public class Spark {
         });
 
         /*
-         Se crea una tarea a partir de los datos que son suministrados.
-         Posteriormente se debe asociar tarea con carrera
-         */
-        post(new Route("/creartarea") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String nombre = request.queryParams("nombre");
-                String peso = request.queryParams("peso");
-                String estado = request.queryParams("estado");
-                String fechaFin = request.queryParams("fechaFin");
-
-                JSONObject doc;
-                JSONObject tarea = new JSONObject();
-
-                tarea.put("nombre", nombre);
-                tarea.put("peso", peso);
-                tarea.put("estado", estado);
-                tarea.put("fechaFin", fechaFin);
-
-                doc = servicioBDProyecto.crearTarea(tarea);
-
-                return doc;
-            }
-        });
-
-        /*
          Dado un id de proyecto y de carrera, se asocia dicha carrera
          al proyecto, es decir, se anade a la lista de carreras dentro
          del proyecto. 
@@ -263,33 +237,33 @@ public class Spark {
 
             }
         });
-
+        
         /*
-         Dado un id de una carrera y de una tarea, se asocia dicha tarea
-         a la carrera, es decir, se anade a la lista de tareas dentro
-         de la carrera.
+         Se crea una tarea a partir de los datos que son suministrados.
+         Posteriormente se debe asociar tarea con carrera
          */
-        put(new Route("/asociartareacarrera") {
+        post(new Route("/creartarea") {
             @Override
             public Object handle(Request request, Response response) {
+                String nombre = request.queryParams("nombre");
+                String peso = request.queryParams("peso");
+                String estado = request.queryParams("estado");
+                String fechaFin = request.queryParams("fechaFin");
                 String idCarr = request.queryParams("carreraId");
-                String idTarea = request.queryParams("tareaId");
 
-                JSONObject carrera = servicioBDProyecto.asociarTareaCarrera(idCarr, idTarea);
-                if (carrera.has("error")) {
-                    response.status(404);
-                    return carrera;
-                }
-                if (carrera.has("requisitos")) {
-                    JSONArray auxList = carrera.getJSONArray("requisitos");
-                    carrera.put("requisitos", limpiarListaId(auxList));
-                }
-                if (carrera.has("tareas")) {
-                    JSONArray auxList = carrera.getJSONArray("tareas");
-                    carrera.put("tareas", limpiarListaId(auxList));
-                }
-                return carrera;
+                JSONObject doc;
+                JSONObject tarea = new JSONObject();
 
+                tarea.put("nombre", nombre);
+                tarea.put("peso", peso);
+                tarea.put("estado", estado);
+                tarea.put("fechaFin", fechaFin);
+
+                doc = servicioBDProyecto.crearTarea(tarea);
+                JSONObject carrera = 
+                        servicioBDProyecto.asociarTareaCarrera(idCarr, doc.getString("_id"));
+                
+                return doc;
             }
         });
 

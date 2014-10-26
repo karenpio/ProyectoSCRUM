@@ -39,7 +39,7 @@ public class ServicioBD {
             mongo = new MongoClient("localhost", 27017);
 
             // Crear la base de datos (si no existe) (Get database)
-            db = mongo.getDB("SCRUM");
+            db = mongo.getDB("SCRUMKaren");
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");
@@ -109,6 +109,46 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
+    
+    /*
+        Asociar un requisito dado su ID a un proyecto. En proyecto se tiene una
+        lista de requisitos en la que adentro se tienen los objectId de todos
+        los requisitos asociados. 
+    */
+    public JSONObject asociarRequisito(String projectId, String reqId){
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(projectId));
+
+        DBObject proy = proyecto.findOne(query);
+        
+        // Se revisa si se encontro el proyecto.
+        if (proy == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si el proyecto ya tiene requisitos.
+        if (proy.containsField("requisitos")) {
+            lista = (BasicDBList) proy.get("requisitos");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si el proyecto ya tiene a ese requisito.
+        ObjectId idReq = new ObjectId(reqId);
+        if (!lista.contains(idReq)) {
+            lista.add(idReq);
+            proy.put("requisitos", lista);
+            proyecto.save(proy);
+        }
+        
+        return formatearJSON(proy);
+    }
+    
 
     // Se asocia un email a la lista de participantes
     // Por ahora sin chequear si el usuario existe.

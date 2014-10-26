@@ -106,6 +106,26 @@ public class Spark {
                 return doc;
             }
         });
+        /*
+            Dado un id de proyecto y de requisito, se asocia dicho requisito
+            al proyecto, es decir, se anade a la lista de requisitos dentro
+            del proyecto.
+        */
+        put(new Route("/asociarrequisito") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idProy = request.queryParams("proyectoId");
+                String idReq = request.queryParams("requisitoId");
+
+                JSONObject proyecto = servicioBDProyecto.asociarRequisito(idProy, idReq);
+                if (proyecto.has("error")) {
+                    response.status(404);
+                    return proyecto;
+                }
+                return proyecto;
+
+            }
+        });
 
         /*
          Dado un _id de proyecto y un email de participante, se actualiza el proyecto

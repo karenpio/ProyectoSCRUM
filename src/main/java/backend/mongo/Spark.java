@@ -124,6 +124,21 @@ public class Spark {
                 return listaTareas;
             }
         });
+        
+        /*
+         Dado un id de carrera pasado por url, buscamos todos las tareas
+         que estan asociados a ella y devolvemos una lista de json de tareas
+         */
+        get(new Route("/participantes") {
+            @Override
+            public Object handle(Request request, Response response) {
+
+                JSONArray participantes = 
+                        servicioBDProyecto.listarParticipantes();
+
+                return participantes;
+            }
+        });
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */

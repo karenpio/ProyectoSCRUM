@@ -546,5 +546,26 @@ public class ServicioBD {
         }
         return resultados;
     }
+    
+    // Coloca en una lista todos los participantes que estan en la BD
+    @SuppressWarnings("unchecked")
+    public JSONArray listarParticipantes() {
+        DBCursor cursor = participante.find();
+        JSONArray resultados = new JSONArray();
+
+        try {
+            while (cursor.hasNext()) {
+
+                JSONObject doc = new JSONObject(JSON.serialize(cursor.next()));
+                String clean_id = (doc.getJSONObject("_id").get("$oid")).toString();
+                doc.put("_id", clean_id);
+
+                resultados.put(doc);
+            }
+        } finally {
+            cursor.close();
+        }
+        return resultados;
+    }
 
 }

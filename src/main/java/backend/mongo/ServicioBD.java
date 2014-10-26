@@ -41,7 +41,7 @@ public class ServicioBD {
             mongo = new MongoClient("localhost", 27017);
 
             // Crear la base de datos (si no existe) (Get database)
-            db = mongo.getDB("SCRUMKaren");
+            db = mongo.getDB("SCRUM");
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");
@@ -119,7 +119,7 @@ public class ServicioBD {
     }
     
     /*
-        Obtener un reqisito dado su id 
+        Obtener un requisito dado su id 
     */
     public JSONObject obtenerRequisito(String reqId) {
 
@@ -287,7 +287,7 @@ public class ServicioBD {
             return result;
         }
 
-        // Se revisa si el proyecto ya tiene requisitos.
+        // Se revisa si el proyecto ya tiene carreras.
         if (proy.containsField("carreras")) {
             lista = (BasicDBList) proy.get("carreras");
 

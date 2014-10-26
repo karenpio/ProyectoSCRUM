@@ -5,6 +5,7 @@
  */
 package backend.mongo;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -68,23 +69,6 @@ public class ServicioBD {
         return formatearJSONBasic(doc);
     }
 
-    public BasicDBObject actualizarProyecto(JSONObject proy) {
-
-        BasicDBObject query
-                = new BasicDBObject("nombre",
-                        new BasicDBObject("$eq", proy.get("nombre").toString()));
-        DBCursor proyCursor = proyecto.find(query);
-        BasicDBObject proyect = (BasicDBObject) proyCursor.next();
-
-        Object o = JSON.parse(proy.toString());
-        BasicDBObject proyActualizado = (BasicDBObject) o;
-
-        proyecto.save(proyActualizado);
-
-        //proyecto.update(proyect, proyActualizado);
-        return proyActualizado;
-    }
-
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
      Retorna true si ya existe un proyecto con el nombre dado
@@ -146,11 +130,46 @@ public class ServicioBD {
 
         if (doc == null) {
             JSONObject result = new JSONObject();
-            result.put("error", "INVALID_NAME");
+            result.put("error", "INVALID_ID");
             return result;
         }
-        
+
         return formatearJSON(doc);
+
+    }
+
+    public JSONObject asociarParticipante(String email, String projectId) {
+
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(projectId));
+
+        DBObject proy = proyecto.findOne(query);
+
+        // Se revisa si se encontro el proyecto.
+        if (proy == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si el proyecto ya tiene participantes.
+        if (proy.containsField("participantes")) {
+            lista = (BasicDBList) proy.get("participantes");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si el proyecto ya tiene a ese participante.
+        if (!lista.contains(email)) {
+            lista.add(email);
+            proy.put("participantes", lista);
+            proyecto.save(proy);
+        }
+
+        return formatearJSON(proy);
 
     }
 

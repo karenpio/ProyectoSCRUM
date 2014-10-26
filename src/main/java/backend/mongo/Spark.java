@@ -42,7 +42,7 @@ public class Spark {
                 return proyectos;
             }
         });
-        
+
         /* 
          * Se obtienen los datos de un proyecto dado su _id.
          */
@@ -51,10 +51,10 @@ public class Spark {
             public Object handle(Request request, Response response) {
 
                 String projectId = request.params(":projectId");
-                JSONObject proyecto = 
-                        servicioBDProyecto.obtenerProyecto(projectId);
-                
-                if (proyecto.has("error")){
+                JSONObject proyecto
+                        = servicioBDProyecto.obtenerProyecto(projectId);
+
+                if (proyecto.has("error")) {
                     response.status(404);
                 }
                 return proyecto;
@@ -62,28 +62,25 @@ public class Spark {
         });
 
         /*
-            Dado un nombre de proyecto pasado por url, buscamos todos los requisitos
-            que estan asociados a el y devolvemos una lista de Json
-        */
-        
+         Dado un nombre de proyecto pasado por url, buscamos todos los requisitos
+         que estan asociados a el y devolvemos una lista de Json
+         */
         /*
-        get(new Route("/listarrequisitosproyecto/:nombreProyecto") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String nombreProy = new String(request.params(":nombreProyecto"));
+         get(new Route("/listarrequisitosproyecto/:nombreProyecto") {
+         @Override
+         public Object handle(Request request, Response response) {
+         String nombreProy = new String(request.params(":nombreProyecto"));
 
-                DBCursor proyectosCursor = servicioBDProyecto.estaProyectoNombre(nombreProy);
-                BasicDBObject proy = (BasicDBObject) proyectosCursor.next();
+         DBCursor proyectosCursor = servicioBDProyecto.estaProyectoNombre(nombreProy);
+         BasicDBObject proy = (BasicDBObject) proyectosCursor.next();
 
                 
-                BasicDBList listaReq= (BasicDBList) proy.get("requisitos");
+         BasicDBList listaReq= (BasicDBList) proy.get("requisitos");
 
-                return listaReq;
-            }
-        });
-        */
-
-
+         return listaReq;
+         }
+         });
+         */
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */
         post(new Route("/crearproyecto") {
@@ -91,7 +88,7 @@ public class Spark {
             public Object handle(Request request, Response response) {
                 String nombre = request.queryParams("nombre");
                 String descripcion = request.queryParams("descripcion");
-                
+
                 JSONObject doc = new JSONObject();
                 JSONObject proy = new JSONObject();
 
@@ -111,111 +108,73 @@ public class Spark {
         });
 
         /*
-         Dado un nombre de proyecto y un email de participante, se actualiza el proyecto
+         Dado un _id de proyecto y un email de participante, se actualiza el proyecto
          agregando al participante a la lista de participantes (si la tiene) o crea una nueva 
          lista de participantes con el correo dado.
          */
-        
-        /*
         put(new Route("/asociarparticipante") {
             @Override
             public Object handle(Request request, Response response) {
-                String nombreProy = request.queryParams("nombreProyecto");
+                String nombreProy = request.queryParams("proyectoId");
                 String email = request.queryParams("email");
-                BasicDBList lista;
 
-                // Lamamos a la funcion estaProyectoNombre para tomar el proyecto que queremos
-                DBCursor cursorProy = servicioBDProyecto.estaProyectoNombre(nombreProy);
-
-                // Tomamos el proyecto al cual le agregaremos el participante
-                BasicDBObject proy = (BasicDBObject) cursorProy.next();
-
-                // Llamamos a la funcion estaEmailParticipante para tomar el participante que queremos
-                DBCursor cursorPart = servicioBDProyecto.estaEmailParticipante(email);
-
-                // Tomamos el proyecto al cual le agregaremos el participante
-                BasicDBObject part = (BasicDBObject) cursorPart.next();
-
-                if (proy.get("participantes") != null) {
-                    lista = (BasicDBList) proy.get("participantes");
-
-                } else {
-                    lista = new BasicDBList();
+                JSONObject proyecto = servicioBDProyecto.asociarParticipante(email, nombreProy);
+                if (proyecto.has("error")) {
+                    response.status(404);
+                    return proyecto;
                 }
-
-                /*
-                 Verificar que el participante no haya sido agregado antes.
-                 Se utiliza el email en vez del _id porque agregaba mucha basura,
-                 esto debemos acomodarlo mas adelante y preguntarle a Ascander.
-                 
-                if (!lista.contains(part.get("email"))) {
-                    lista.add(part.get("email"));
-                }
-
-                // Por ahora no limpia el _id no estamos seguros si esto sea lo mas conveniente.
-                //JSONObject proyDoc = servicioBDProyecto.limpiarID(proy);
-                JSONObject proyDoc = new JSONObject(JSON.serialize(proy));
-
-                // Colocamos la lista actualizada en el JSON
-                proyDoc.put("participantes", lista);
-
-                // Actualizamos la base de datos dado el JSON actualizado
-                BasicDBObject actualizacion = servicioBDProyecto.actualizarProyecto(proyDoc);
-
-                return actualizacion;
-            }
-        });
-        */
-
-        /*
-            Eliminar un participante dado de un proyecto
-        */
-        
-        /*
-        put(new Route("/desasociarparticipante") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String nombreProy = request.queryParams("nombreProyecto");
-                String email = request.queryParams("email");
-                BasicDBList lista;
-                BasicDBObject actualizacion = null;
-                BasicDBObject proy = new BasicDBObject();
-
-                // Lamamos a la funcion estaProyectoNombre para tomar el proyecto que queremos 
-                // Tomamos el proyecto al cual le agregaremos el participante
-                DBCursor cursorProy = servicioBDProyecto.estaProyectoNombre(nombreProy);
-                proy = (BasicDBObject) cursorProy.next();
-
-                // Llamamos a la funcion estaEmailParticipante para tomar el participante que queremos
-                // Tomamos el proyecto al cual le agregaremos el participante
-                DBCursor cursorPart = servicioBDProyecto.estaEmailParticipante(email);
-                BasicDBObject part = (BasicDBObject) cursorPart.next();
-
-                //System.out.println("-----------------");
-                if (proy.get("participantes") != null) {
-                    //System.out.println("    -----------------");
-                    lista = (BasicDBList) proy.get("participantes");
-                    System.out.println(lista);
-                    if (lista.contains(part.get("email"))) {
-                        lista.remove(part.get("email"));
-                        // Si limpiamos el id se crean dos instancias en la bd lo cual es un problema
-                        // JSONObject proyDoc = servicioBDProyecto.limpiarID(proy);
-                        JSONObject proyDoc = new JSONObject(JSON.serialize(proy));
-
-                        // Colocamos la lista actualizada en el JSON
-                        proyDoc.put("participantes", lista);
-
-                        // Actualizamos la base de datos dado el JSON actualizado
-                        actualizacion = servicioBDProyecto.actualizarProyecto(proyDoc);
-                    }
-                }
-
-                return actualizacion;
+                return proyecto;
 
             }
         });
-        */
 
+        /*
+         Eliminar un participante dado de un proyecto
+         */
+        /*
+         put(new Route("/desasociarparticipante") {
+         @Override
+         public Object handle(Request request, Response response) {
+         String nombreProy = request.queryParams("nombreProyecto");
+         String email = request.queryParams("email");
+         BasicDBList lista;
+         BasicDBObject actualizacion = null;
+         BasicDBObject proy = new BasicDBObject();
+
+         // Lamamos a la funcion estaProyectoNombre para tomar el proyecto que queremos 
+         // Tomamos el proyecto al cual le agregaremos el participante
+         DBCursor cursorProy = servicioBDProyecto.estaProyectoNombre(nombreProy);
+         proy = (BasicDBObject) cursorProy.next();
+
+         // Llamamos a la funcion estaEmailParticipante para tomar el participante que queremos
+         // Tomamos el proyecto al cual le agregaremos el participante
+         DBCursor cursorPart = servicioBDProyecto.estaEmailParticipante(email);
+         BasicDBObject part = (BasicDBObject) cursorPart.next();
+
+         //System.out.println("-----------------");
+         if (proy.get("participantes") != null) {
+         //System.out.println("    -----------------");
+         lista = (BasicDBList) proy.get("participantes");
+         System.out.println(lista);
+         if (lista.contains(part.get("email"))) {
+         lista.remove(part.get("email"));
+         // Si limpiamos el id se crean dos instancias en la bd lo cual es un problema
+         // JSONObject proyDoc = servicioBDProyecto.limpiarID(proy);
+         JSONObject proyDoc = new JSONObject(JSON.serialize(proy));
+
+         // Colocamos la lista actualizada en el JSON
+         proyDoc.put("participantes", lista);
+
+         // Actualizamos la base de datos dado el JSON actualizado
+         actualizacion = servicioBDProyecto.actualizarProyecto(proyDoc);
+         }
+         }
+
+         return actualizacion;
+
+         }
+         });
+         */
     }
 
 }

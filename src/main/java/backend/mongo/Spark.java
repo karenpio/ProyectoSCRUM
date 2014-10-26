@@ -251,6 +251,14 @@ public class Spark {
                     response.status(404);
                     return carrera;
                 }
+                if (carrera.has("requisitos")) {
+                    JSONArray auxList = carrera.getJSONArray("requisitos");
+                    carrera.put("requisitos", limpiarListaId(auxList));
+                }
+                if (carrera.has("tareas")) {
+                    JSONArray auxList = carrera.getJSONArray("tareas");
+                    carrera.put("tareas", limpiarListaId(auxList));
+                }
                 return carrera;
 
             }
@@ -271,6 +279,14 @@ public class Spark {
                 if (carrera.has("error")) {
                     response.status(404);
                     return carrera;
+                }
+                if (carrera.has("requisitos")) {
+                    JSONArray auxList = carrera.getJSONArray("requisitos");
+                    carrera.put("requisitos", limpiarListaId(auxList));
+                }
+                if (carrera.has("tareas")) {
+                    JSONArray auxList = carrera.getJSONArray("tareas");
+                    carrera.put("tareas", limpiarListaId(auxList));
                 }
                 return carrera;
 

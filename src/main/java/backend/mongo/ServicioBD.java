@@ -36,7 +36,7 @@ public class ServicioBD {
             mongo = new MongoClient("localhost", 27017);
 
             // Crear la base de datos (si no existe) (Get database)
-            db = mongo.getDB("SCRUMKaren");
+            db = mongo.getDB("SCRUM");
 
             // Se crea la coleccion "proyecto"
             proyecto = db.getCollection("proyecto");

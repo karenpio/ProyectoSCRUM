@@ -201,20 +201,6 @@ public class Spark {
             }
         });
 
-        /*
-         Obtener lista de los id's de las carreras de los proyectos (ERIK)
-         */
-        get(new Route("/obtenerIdCarreras") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String nombre = request.queryParams("nombre");
-                JSONObject proy = new JSONObject();
-                proy.put("nombre", nombre);
-                JSONObject idCarreras = servicioBDProyecto.obtenerIdCarreras(proy);
-                return idCarreras;
-            }
-
-        });
 
     }
 

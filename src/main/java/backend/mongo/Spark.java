@@ -57,6 +57,15 @@ public class Spark {
                 if (proyecto.has("error")) {
                     response.status(404);
                 }
+                if (proyecto.has("requisitos")) {
+                    JSONArray auxList = proyecto.getJSONArray("requisitos");
+                    proyecto.put("requisitos", limpiarListaId(auxList));
+                }
+                if (proyecto.has("carreras")) {
+                    JSONArray auxList = proyecto.getJSONArray("carreras");
+                    proyecto.put("carreras", limpiarListaId(auxList));
+                }
+                
                 return proyecto;
             }
         });
@@ -149,6 +158,14 @@ public class Spark {
                     response.status(404);
                     return proyecto;
                 }
+                if (proyecto.has("requisitos")) {
+                    JSONArray auxList = proyecto.getJSONArray("requisitos");
+                    proyecto.put("requisitos", limpiarListaId(auxList));
+                }
+                if (proyecto.has("carreras")) {
+                    JSONArray auxList = proyecto.getJSONArray("carreras");
+                    proyecto.put("carreras", limpiarListaId(auxList));
+                }
                 return proyecto;
 
             }
@@ -169,6 +186,14 @@ public class Spark {
                 if (proyecto.has("error")) {
                     response.status(404);
                     return proyecto;
+                }
+                if (proyecto.has("requisitos")) {
+                    JSONArray auxList = proyecto.getJSONArray("requisitos");
+                    proyecto.put("requisitos", limpiarListaId(auxList));
+                }
+                if (proyecto.has("carreras")) {
+                    JSONArray auxList = proyecto.getJSONArray("carreras");
+                    proyecto.put("carreras", limpiarListaId(auxList));
                 }
                 return proyecto;
 
@@ -212,6 +237,14 @@ public class Spark {
                     response.status(404);
                     return proyecto;
                 }
+                if (proyecto.has("requisitos")) {
+                    JSONArray auxList = proyecto.getJSONArray("requisitos");
+                    proyecto.put("requisitos", limpiarListaId(auxList));
+                }
+                if (proyecto.has("carreras")) {
+                    JSONArray auxList = proyecto.getJSONArray("carreras");
+                    proyecto.put("carreras", limpiarListaId(auxList));
+                }
                 return proyecto;
 
             }
@@ -231,6 +264,14 @@ public class Spark {
                     response.status(404);
                     return proyecto;
                 }
+                if (proyecto.has("requisitos")) {
+                    JSONArray auxList = proyecto.getJSONArray("requisitos");
+                    proyecto.put("requisitos", limpiarListaId(auxList));
+                }
+                if (proyecto.has("carreras")) {
+                    JSONArray auxList = proyecto.getJSONArray("carreras");
+                    proyecto.put("carreras", limpiarListaId(auxList));
+                }
                 return proyecto;
 
             }
@@ -238,5 +279,16 @@ public class Spark {
 
 
     }
+    
+    
+   public static JSONArray limpiarListaId(JSONArray lista) {
+       JSONArray result = new JSONArray();
+       JSONObject aux;
+       for (int i = 0; i < lista.length(); i++){
+           aux = (JSONObject) lista.get(i);
+           result.put(aux.get("$oid"));
+       }
+       return result;
+   }
 
 }

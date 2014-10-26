@@ -46,10 +46,10 @@ public class ServicioBD {
 
             // Se crea la coleccion "participante"
             participante = db.getCollection("participante");
-            
+
             // Se crea la coleccion "carrera"
             carrera = db.getCollection("carrera");
-            
+
             // Se crea la coleccion "tarea"
             tarea = db.getCollection("tarea");
 
@@ -65,13 +65,14 @@ public class ServicioBD {
      */
     public JSONObject crearProyecto(JSONObject proy) {
 
-        BasicDBObject doc = new BasicDBObject("nombre", proy.get("nombre"))
+        BasicDBObject doc
+                = new BasicDBObject("nombre", proy.get("nombre"))
                 .append("descripcion", proy.get("descripcion"));
 
         proyecto.insert(doc);
         return formatearJSON(doc);
     }
-    
+
     /* Se crea un documento de tarea (BasicDBObject) con sus atributos y se inserta
      en la coleccion tarea.
      */
@@ -85,8 +86,6 @@ public class ServicioBD {
         tarea.insert(doc);
         return formatearJSON(doc);
     }
-    
-    
 
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
@@ -128,10 +127,10 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
-    
+
     /*
-        Obtener un requisito dado su id 
-    */
+     Obtener un requisito dado su id 
+     */
     public JSONObject obtenerRequisito(String reqId) {
 
         BasicDBObject query = new BasicDBObject();
@@ -148,10 +147,10 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
-    
+
     /*
-        Obtener una carrera dado su id 
-    */
+     Obtener una carrera dado su id 
+     */
     public JSONObject obtenerCarrera(String carrId) {
 
         BasicDBObject query = new BasicDBObject();
@@ -168,10 +167,10 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
-    
+
     /*
-        Obtener una tarea dado su id 
-    */
+     Obtener una tarea dado su id 
+     */
     public JSONObject obtenerTarea(String tareaId) {
 
         BasicDBObject query = new BasicDBObject();
@@ -188,17 +187,19 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
-    
+
     /*
-        Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
-        su lista de requisitos y formamos una lista con los nombres de
-        esos requisitos
-    */
-    public JSONArray listarRequisitosProy(String proyectoId){
-        
+     Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
+     su lista de requisitos y formamos una lista con los nombres de
+     esos requisitos
+     */
+    public JSONArray listarRequisitosProy(String proyectoId) {
+
         JSONObject proy = obtenerProyecto(proyectoId);
-        
-        
+        if (!proy.has("requisitos")) {
+            return new JSONArray();
+        }
+
         JSONArray listaReqId = (JSONArray) proy.get("requisitos");
         String idReq;
         BasicDBList nombresReq = new BasicDBList();
@@ -209,19 +210,22 @@ public class ServicioBD {
         }
         JSONArray resultado = new JSONArray(nombresReq);
         return resultado;
-        
+
     }
-    
+
     /*
-        Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
-        su lista de carreras y formamos una lista con los numeros de
-        esas carreras
-    */
-    public JSONArray listarCarrerasProy(String proyectoId){
-        
+     Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
+     su lista de carreras y formamos una lista con los numeros de
+     esas carreras
+     */
+    public JSONArray listarCarrerasProy(String proyectoId) {
+
         JSONObject proy = obtenerProyecto(proyectoId);
-        
-        
+
+        if (!proy.has("carreras")) {
+            return new JSONArray();
+        }
+
         JSONArray listaCarrId = (JSONArray) proy.get("carreras");
         System.out.println(listaCarrId);
         String idCarr;
@@ -234,17 +238,21 @@ public class ServicioBD {
         }
         JSONArray resultado = new JSONArray(numeroCarrera);
         return resultado;
-        
+
     }
-    
+
     /*
-        Dado el id de una carrera, buscamos dicha carrera, obtenemos
-        su lista de requisitos y formamos una lista con los nombres de
-        esos requisitos
-    */
-    public JSONArray listarRequisitosCarrera(String carreraId){
-        
+     Dado el id de una carrera, buscamos dicha carrera, obtenemos
+     su lista de requisitos y formamos una lista con los nombres de
+     esos requisitos
+     */
+    public JSONArray listarRequisitosCarrera(String carreraId) {
+
         JSONObject carr = obtenerCarrera(carreraId);
+
+        if (!carr.has("requisitos")) {
+            return new JSONArray();
+        }
 
         JSONArray listaReqId = (JSONArray) carr.get("requisitos");
         String idReq;
@@ -256,16 +264,20 @@ public class ServicioBD {
         }
         JSONArray resultado = new JSONArray(nombresReq);
         return resultado;
-        
+
     }
-    
+
     /*
-        Dado el id de una carrera, buscamos dicha carrera, obtenemos
-        su lista de tareas y formamos una lista de json con dichas tareas
-    */
-    public JSONArray listarTareasCarrera(String carreraId){
-        
+     Dado el id de una carrera, buscamos dicha carrera, obtenemos
+     su lista de tareas y formamos una lista de json con dichas tareas
+     */
+    public JSONArray listarTareasCarrera(String carreraId) {
+
         JSONObject carr = obtenerCarrera(carreraId);
+
+        if (!carr.has("tareas")) {
+            return new JSONArray();
+        }
 
         JSONArray listaTareasId = (JSONArray) carr.get("tareas");
         String idTarea;
@@ -277,20 +289,19 @@ public class ServicioBD {
         }
         JSONArray resultado = new JSONArray(listaTarea);
         return resultado;
-        
+
     }
-    
-    
+
     /*
-        Asociamos Carrera a un proyecto para poder hacer puebas
-    */
-    public JSONObject asociarCarrera(String projectId, String carrId){
+     Asociamos Carrera a un proyecto para poder hacer puebas
+     */
+    public JSONObject asociarCarrera(String projectId, String carrId) {
         BasicDBList lista;
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(projectId));
 
         DBObject proy = proyecto.findOne(query);
-        
+
         // Se revisa si se encontro el proyecto.
         if (proy == null) {
             JSONObject result = new JSONObject();
@@ -314,34 +325,29 @@ public class ServicioBD {
             proy.put("carreras", lista);
             proyecto.save(proy);
         }
-        
+
         return formatearJSON(proy);
     }
-    
+
     /*
-        Asociar un requisito dado su ID a un proyecto. En proyecto se tiene una
-        lista de requisitos en la que adentro se tienen los objectId de todos
-        los requisitos asociados. 
-    */
-    public JSONObject asociarRequisito(String projectId, String reqId){
+     Asociar un requisito dado su ID a un proyecto. En proyecto se tiene una
+     lista de requisitos en la que adentro se tienen los objectId de todos
+     los requisitos asociados. 
+     */
+    public JSONObject asociarRequisito(String projectId, String reqId) {
         BasicDBList lista;
-        
+
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(projectId));
-        
-
 
         DBObject proy = proyecto.findOne(query);
 
-        
-        
         // Se revisa si se encontro el proyecto. Falta revisar los requisitos
         if (proy == null) {
             JSONObject result = new JSONObject();
             result.put("error", "INVALID_ID");
             return result;
         }
-
 
         // Se revisa si el proyecto ya tiene carreras.
         if (proy.containsField("requisitos")) {
@@ -359,22 +365,21 @@ public class ServicioBD {
             proy.put("requisitos", lista);
             proyecto.save(proy);
         }
-        
+
         return formatearJSON(proy);
     }
-    
+
     /*
-        Asociar un requisito a una carrera dado su ID. En carrera se tiene una
-        lista de requisitos en la que adentro se tienen los objectId de todos
-        los requisitos asociados. 
-    */
-    public JSONObject asociarRequisitoCarrera(String carreraId, String reqId){
+     Asociar un requisito a una carrera dado su ID. En carrera se tiene una
+     lista de requisitos en la que adentro se tienen los objectId de todos
+     los requisitos asociados. 
+     */
+    public JSONObject asociarRequisitoCarrera(String carreraId, String reqId) {
         BasicDBList lista;
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(carreraId));
-        
-        System.out.println(query);
 
+        System.out.println(query);
 
         DBObject carr = carrera.findOne(query);
 
@@ -384,7 +389,6 @@ public class ServicioBD {
             result.put("error", "INVALID_ID");
             return result;
         }
-
 
         // Se revisa si la carrera ya tiene requisitos asociados.
         if (carr.containsField("requisitos")) {
@@ -402,23 +406,20 @@ public class ServicioBD {
             carr.put("requisitos", lista);
             carrera.save(carr);
         }
-        
+
         return formatearJSON(carr);
     }
-    
-    
+
     /*
-        Asociar una tarea a una carrera dado su ID. En carrera se tiene una
-        lista de tareas en la que adentro se tienen los objectId de todas
-        las tareas asociadas. 
-    */
-    public JSONObject asociarTareaCarrera(String carreraId, String tareaId){
+     Asociar una tarea a una carrera dado su ID. En carrera se tiene una
+     lista de tareas en la que adentro se tienen los objectId de todas
+     las tareas asociadas. 
+     */
+    public JSONObject asociarTareaCarrera(String carreraId, String tareaId) {
         BasicDBList lista;
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(carreraId));
-        
-         
-        
+
         DBObject carr = carrera.findOne(query);
 
         // Se revisa si se encontro la carrera. Falta revisar el requisito
@@ -427,7 +428,6 @@ public class ServicioBD {
             result.put("error", "INVALID_ID");
             return result;
         }
-
 
         // Se revisa si la carrera ya tiene requisitos asociados.
         if (carr.containsField("tareas")) {
@@ -445,11 +445,9 @@ public class ServicioBD {
             carr.put("tareas", lista);
             carrera.save(carr);
         }
-        
+
         return formatearJSON(carr);
     }
-    
-    
 
     // Se asocia un email a la lista de participantes
     // Por ahora sin chequear si el usuario existe.
@@ -507,7 +505,7 @@ public class ServicioBD {
         // Se revisa si el proyecto ya tiene participantes.
         if (proy.containsField("participantes")) {
             lista = (BasicDBList) proy.get("participantes");
-            
+
             if (lista.contains(email)) {
                 lista.remove(email);
                 proy.put("participantes", lista);
@@ -537,35 +535,12 @@ public class ServicioBD {
                 doc.put("_id", clean_id);
                 doc.put("descripcion", consultado.getString("descripcion"));
                 doc.put("nombre", consultado.getString("nombre"));
-                if (consultado.has("participantes")){
+                if (consultado.has("participantes")) {
                     doc.put("participantes", consultado.getJSONArray("participantes"));
                 }
 
                 resultados.put(doc);
             }
-        } finally {
-            cursor.close();
-        }
-        return resultados;
-    }
-    
-    /* 
-        Obtener la identificacion de las carreras asociadas a un proyecto
-    */
-    public JSONObject obtenerIdCarreras(JSONObject proy){
-        
-        BasicDBObject query = new BasicDBObject();
-        query.put("nombre", proy.get("nombre"));
-        DBCursor cursor = proyecto.find(query);
-        
-        
-        JSONObject resultados = new JSONObject();
-        try {
-            while(cursor.hasNext()){
-                DBObject c = cursor.next();
-                BasicDBList carreras = (BasicDBList) c.get("carreras");
-                resultados.put("_id",carreras);         
-            } 
         } finally {
             cursor.close();
         }

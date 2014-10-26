@@ -152,9 +152,9 @@ public class Spark {
         });
 
         /*
-            Se crea una tarea a partir de los datos que son suministrados.
-            Posteriormente se debe asociar tarea con carrera
-        */
+         Se crea una tarea a partir de los datos que son suministrados.
+         Posteriormente se debe asociar tarea con carrera
+         */
         post(new Route("/creartarea") {
             @Override
             public Object handle(Request request, Response response) {
@@ -178,8 +178,8 @@ public class Spark {
         });
 
         /*
-         Dado un id de proyecto y de requisito, se asocia dicho requisito
-         al proyecto, es decir, se anade a la lista de requisitos dentro
+         Dado un id de proyecto y de carrera, se asocia dicha carrera
+         al proyecto, es decir, se anade a la lista de carreras dentro
          del proyecto. 
          */
         put(new Route("/asociarcarrera") {

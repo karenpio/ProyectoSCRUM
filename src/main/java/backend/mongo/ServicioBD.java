@@ -201,5 +201,28 @@ public class ServicioBD {
         }
         return resultados;
     }
+    
+    /* 
+        Obtener la identificacion de las carreras asociadas a un proyecto
+    */
+    public JSONObject obtenerIdCarreras(JSONObject proy){
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put("nombre", proy.get("nombre"));
+        DBCursor cursor = proyecto.find(query);
+        
+        
+        JSONObject resultados = new JSONObject();
+        try {
+            while(cursor.hasNext()){
+                DBObject c = cursor.next();
+                BasicDBList carreras = (BasicDBList) c.get("carreras");
+                resultados.put("_id",carreras);         
+            } 
+        } finally {
+            cursor.close();
+        }
+        return resultados;
+    }
 
 }

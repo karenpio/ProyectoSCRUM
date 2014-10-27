@@ -51,6 +51,7 @@ function ControladorScrum($scope,$http) {
     $scope.nombreProyecto="";
     $scope.descrProyecto="";
     $scope.productoProyecto="";
+    $scope.participantes=[];
   };
   
   //Funcion que crea un proyecto: por ahora, simplemente lo agregamos
@@ -67,7 +68,7 @@ function ControladorScrum($scope,$http) {
         url     : 'http://localhost:4567/crearproyecto',
 	data: "nombre="+$scope.nombreProyecto+"&descripcion="+$scope.descrProyecto,
 	headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
-    }).success(function(){
+    }).success(function(data){
       $scope.parteCreacion="none";
       $scope.parteManejoParticipantes="none";
       $scope.home="none";
@@ -75,10 +76,12 @@ function ControladorScrum($scope,$http) {
       $scope.nombreProyecto="";
       $scope.descrProyecto="";
       $scope.productoProyecto=""; 
+      $scope.mensaje="iasdiasjdiaojio";
   
     })
     .error(function(data,status){
       $scope.mensaje=status;
+      $scope.mensaje=data;
     });
   };
   
@@ -87,26 +90,64 @@ function ControladorScrum($scope,$http) {
   //participantes para dicho proyecto. Esta funcion ubica el proyecto
   //deseado y lo asigna a la variable proyectoActual para tenerlo siempre
   //presente.
-  $scope.abrirProyecto=function(nombreProyecto){
-    for (j=0; j< $scope.proyectos.length; j++){
-      if ($scope.proyectos[j].nombre==nombreProyecto){
-	$scope.proyectoActual=$scope.proyectos[j];
-      }
-    }
+  $scope.abrirProyecto=function(a){
+//     for (j=0; j< $scope.proyectos.length; j++){
+//       if ($scope.proyectos[j].nombre==nombreProyecto){
+// 	$scope.proyectoActual=$scope.proyectos[j];
+//       }
+//     }
+    
+    $scope.proyectoActual=a; //Objeto del proyecto actual.
+    //Debo listar los participantes que hay en la bd.
+     $http.get('http://0.0.0.0:4567/participantes')
+      .success(function(data){
+	$scope.participantes=data;
+	$scope.mensaje="yipi";
+      })
+      .error(function(data,status){
+      $scope.mensaje = status;
+
+      });
     $scope.parteAgregarParticipantes="block";
     $scope.parteManejoParticipantes="none";
   };
   
   //Agrega un participante a la lista de participantes del proyectoActual
-  $scope.agregarParticipante=function(){
+  $scope.agregarParticipante=function(a){
     //Lo agrego a la variable proyecto actual para reflejar el cambio
     //instantanemante. Debo guardar el cambio hecho en la base de datos.
     //En la variable de scope proyectoActual tengo la info del proyecto
     //a modificar en la base de datos.
-    $scope.proyectoActual.participantes.push({nombre:$scope.participante, correo: $scope.participanteMail, telefono: $scope.participantrTlf});
+    
+    //Llamo al servicio para asociar participante con proyecto.
+
+    $http({
+        method  : 'PUT',
+        url     : 'http://localhost:4567/asociarparticipante',
+	data: "email="+a+"&proyectoId="+$scope.proyectoActual._id,
+	headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+    }).success(function(data){
+      $scope.parteCreacion="none";
+      $scope.parteManejoParticipantes="none";
+      $scope.home="none";
+      $scope.mensajeExito="block";  
+      $scope.nombreProyecto="";
+      $scope.descrProyecto="";
+      $scope.productoProyecto=""; 
+      $scope.mensaje="iasdiasjdiaojio";
+  
+    })
+    .error(function(data,status){
+      $scope.mensaje=status;
+      $scope.mensaje=data;
+    });
+    
     $scope.participante="";
     $scope.participanteMail="";
     $scope.participanteTlf="";
+    $scope.parteAgregarParticipantes="none";
+    $scope.parteManejoParticipantes="none";
+    $scope.mensajeExito="block";  
   };
   
   //Funcion para eliminar un participante del proyecto actual con el que

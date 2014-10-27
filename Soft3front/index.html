@@ -9,7 +9,6 @@
 <body ng-app>
 
 <div ng-controller="ControladorScrum">
-
   <!--Mensaje a ser mostrado luego de una ejecucion exitosa de crear proyecto-->
   <div id="mensajeExito" style="display:{{mensajeExito}}" >
     <p> Su transaccion se ha completado satisfactoriamente </p>
@@ -45,10 +44,9 @@
     <!--Se abre la seccion de manejo de participantes: en la cual primero se
     presentara la lista de proyectos que hay para gestionar.-->
     <div id="ManejoParticipantes" style="display:{{parteManejoParticipantes}}">
-	{{mensaje}}
 	<h3> Lista de proyectos actuales: </h3>
 	<ul ng-repeat="pro in proyectos">
-	  <li><a href="" ng-click="abrirProyecto(pro.nombre)">
+	  <li><a href="" ng-click="abrirProyecto(pro)">
 	  {{pro.nombre}}
 	  </a></li>
 	</ul>
@@ -57,23 +55,14 @@
 
    <!-- Seccion para agregar participantes en un proyecto dado.-->
     <div id="AgregarParticipantes" style="display:{{parteAgregarParticipantes}}" >
-      <h3> Participantes del proyecto : {{proyectoActual.nombre}}</h3>
-      <ul>
-	<li ng-repeat="pro in proyectoActual.participantes"> {{pro.nombre}} (<a href="" ng-click="eliminarPart(pro)"> Eliminar</a>)
-	</li>
+      <h3> Personas almacenadas: </h3>
+      <p> Presione para asociar dicha persona al proyecto seleccionado </p>
+      <ul ng-repeat="pro in participantes">
+	<li><a href="" ng-click="agregarParticipante(pro.email)">
+	  {{pro.nombre}}
+	  </a></li>
       </ul> 
-    
-      <form ng-submit="agregarParticipante()">
-	<label> Nombre del participante </label>
-	<input type="text" ng-model="participante" placeholder="Participante a agregar">
-	<br> </br>
-	<label> Email </label>
-	<input type="text" ng-model="participanteMail" placeholder="Correo">
-	<br> </br>
-	<label> Tlf </label>
-	<input type="text" ng-model="participanteTlf" placeholder="TLF">
-	<button type="submit"> Agregar </button>
-      </form>   
+     
       <a href="" ng-click="volverHome()">Volver</a>
     </div> <!--Div agregado de participantes-->
 

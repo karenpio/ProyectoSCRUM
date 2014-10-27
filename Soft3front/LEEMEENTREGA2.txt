@@ -1,0 +1,25 @@
+README:
+
+>Para correrlo:
+  1.- En netbeans abren el proyecto MAVEN, y lo corren. Tengan su mongo instalado y eso.
+
+  2.- Como los servicios estan en un dominio, el html en otro hay una politica de seguridad
+      de los browsers que evita ese tipo de llamadas por un script de javascript, entonces
+      deben abrir su explorador en un modo en que quiten esas restricciones de seguridad
+      (para dejar de hacer esto, deberiamos servir el html y javascript desde el mismo
+       server en que estan los servicios, o habilitar el spark para que maneje llamadas
+       de este estilo (CORS)) entonces para abrir sus navegadores en dicho modo:
+
+	-Chromium: (desde el terminal)
+	  chromium-browser --disable-web-security
+
+	-Chrome:
+	  google-chrome --disable-web-security
+
+  3.- En la ventana del explorador que se les abra, abren el archivo html que deseen
+      ver: index(entrega1) o index2(entrega2)
+
+
+PD: Con postman y chequeando el documento que hizo Yeiker pueden armar casitos
+de prueba para chequear todo. basicamente agarren 1 proyecto y asocienle una carrera.
+de resto meterle requisitos a esa carrera lo hacen por el mismo html.

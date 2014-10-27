@@ -1,0 +1,64 @@
+/* General */
+
+a {
+	color: black;
+}
+
+.a_black {
+	color: black !important;
+}
+
+/* Navbar */
+
+.navbar {
+	border-radius: 0;
+} 
+
+.navbar-default {
+	background-color: #01579b;
+	border: 0;
+}
+
+.navbar-default .navbar-brand {
+	color: white;
+}
+
+.navbar-default .navbar-brand:hover {
+	color: white;
+	font-weight: 600;
+}
+
+.navbar-default .navbar-nav>li>a {
+	color: white;
+}
+
+.navbar-default .navbar-nav>li:hover {
+	background-color: #0288d1;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+	color: white;
+}
+
+/* Body */
+
+#cuerpo {
+	padding: 0 5%;
+}
+
+#lista_proyectos {
+	color: white;
+}
+
+.panel-default>.panel-heading {
+	background-color: #0288d1;
+	border-color: #0288d1;
+}
+
+.row {
+	margin: 0;
+}
+
+#left_panel {
+	padding: 0;
+}

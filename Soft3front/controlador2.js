@@ -104,7 +104,7 @@ function ControladorScrum2($scope,$http) {
 	  $scope.carreras=data;
 	}).
 	error(function(data, status, headers, config) {
-	  $scope.mensaje="error papillo";
+	  $scope.mensaje="error";
 	});
    };
    
@@ -124,7 +124,7 @@ function ControladorScrum2($scope,$http) {
 	  $scope.requisitos=data;
 	}).
 	error(function(data, status, headers, config) {
-	  $scope.mensaje="error papillo";
+	  $scope.mensaje="error";
 	});
 	
 	//Ahora debo pedir los requisitos para la carrera espeficamente.
@@ -135,7 +135,7 @@ function ControladorScrum2($scope,$http) {
 	  $scope.requisitosCarrera=data;
 	}).
 	error(function(data, status, headers, config) {
-	  $scope.mensaje="error papillo";
+	  $scope.mensaje="error";
 	});
    };
    
@@ -158,7 +158,7 @@ function ControladorScrum2($scope,$http) {
 	$scope.mensaje="carreraId="+$scope.carreraActual+"&requisitoId="+a._id;
 	$http({
 	    method  : 'put',
-	    url     : 'http://localhost:4567/asociarrequisitocarrera',
+	    url     : 'http://0.0.0.0:4567/asociarrequisitocarrera',
 	    data: "carreraId="+$scope.carreraActual+"&requisitoId="+a._id,
 	    headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
 	}).success(function(data){
@@ -187,7 +187,7 @@ function ControladorScrum2($scope,$http) {
 	  $scope.tareasCarrera=data;
 	}).
 	error(function(data, status, headers, config) {
-	  $scope.mensaje="error papillo";
+	  $scope.mensaje="error";
 	});
    };
    
@@ -200,7 +200,7 @@ function ControladorScrum2($scope,$http) {
       //Actualizo en la BD.
       $http({
 	  method  : 'POST',
-	  url     : 'http://localhost:4567/creartarea',
+	  url     : 'http://0.0.0.0:4567/creartarea',
 	  data: "nombre="+$scope.nomTarea+"&peso="+$scope.pesoTarea+"&estado="+$scope.estadoTarea+"&fechaFin="+$scope.fechaTarea+"&carreraId="+$scope.carreraActual,
 	  headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
       }).success(function(data){

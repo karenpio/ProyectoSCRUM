@@ -221,6 +221,12 @@ function ControladorScrum2($scope,$http) {
       //Guardar en BD
       //Llamo al post para guardar la tarea en la BD.
       //Actualizo en la BD.
+      
+      //Borro el formulario
+      $scope.nomTarea="";
+      $scope.pesoTarea="";
+      $scope.estadoTarea="";
+      $scope.fechaTarea="";
       $http({
 	  method  : 'POST',
 	  url     : 'http://0.0.0.0:4567/creartarea',

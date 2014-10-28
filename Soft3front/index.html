@@ -4,11 +4,15 @@
         <title>SSS:Scrum Support Site</title>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
         <script type="text/javascript" src="controlador.js"></script>
+        <link   rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+        <link   rel="stylesheet" type="text/css" href="estilo.css">
     </head>
 
 <body ng-app>
 
 <div ng-controller="ControladorScrum">
+ <div class="container-fluid" id="encabezado"> <h1> SSS: Scrum Support Site </h1></div>
+    
   <!--Mensaje a ser mostrado luego de una ejecucion exitosa de crear proyecto-->
   <div id="mensajeExito" style="display:{{mensajeExito}}" >
     <p> Su transaccion se ha completado satisfactoriamente </p>
@@ -23,16 +27,14 @@
     <div id="CreacionProyectos" style="display:{{parteCreacion}}">
       <form ng-submit="CrearProyecto()">
 	<label> Nombre del proyecto </label>
-	<input type="text" ng-model="nombreProyecto" placeholder="Nombre del Proyecto">
-	<br></br>
+	<input type="text" class="form-control" ng-model="nombreProyecto" placeholder="Nombre del Proyecto">
 
 
 	<label> Descripcion/comentarios sobre el proyecto </label>
-	<br></br>
-	<textarea ng-model="descrProyecto" ROWS=3 COLS=30 placeholder="Descripcion breve del proyecto/producto" > </textarea>
+	<textarea class="form-control" ng-model="descrProyecto" ROWS=3 COLS=30 placeholder="Descripcion breve del proyecto/producto" > </textarea>
 
 	<br></br>
-	<button type="submit"> Crear Proyecto </button>
+	<button type="submit" class="btn btn-default"> Crear Proyecto </button>
       </form>
      <a href="" ng-click="volverHome()">  Volver </a>
     </div> <!--Div creacion de proyectos-->

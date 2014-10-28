@@ -208,6 +208,7 @@ function ControladorScrum2($scope,$http) {
 	$http.get(url).
 	success(function(data, status, headers, config) {
 	  $scope.tareasCarrera=data;
+	  $scope.mensaje=data;
 	}).
 	error(function(data, status, headers, config) {
 	  $scope.mensaje="error";
@@ -223,17 +224,17 @@ function ControladorScrum2($scope,$http) {
       //Actualizo en la BD.
       
       //Borro el formulario
-      $scope.nomTarea="";
-      $scope.pesoTarea="";
-      $scope.estadoTarea="";
-      $scope.fechaTarea="";
+ 
       $http({
 	  method  : 'POST',
 	  url     : 'http://0.0.0.0:4567/creartarea',
 	  data: "nombre="+$scope.nomTarea+"&peso="+$scope.pesoTarea+"&estado="+$scope.estadoTarea+"&fechaFin="+$scope.fechaTarea+"&carreraId="+$scope.carreraActual,
 	  headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
       }).success(function(data){
-    
+	  $scope.nomTarea="";
+      $scope.pesoTarea="";
+      $scope.estadoTarea="";
+      $scope.fechaTarea="";
       })
       .error(function(data,status){
 	$scope.mensaje="mal";

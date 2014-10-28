@@ -30,6 +30,9 @@ function ControladorScrum2($scope,$http) {
     $scope.requisitos="";
     $scope.pacnom="";
      $scope.mensajeCarrerasVacias="";
+     $scope.numcarract="";
+     $scope.requisitos=[];
+     $scope.tareasCarrera=[];
 
   };
   
@@ -51,6 +54,10 @@ function ControladorScrum2($scope,$http) {
       $scope.requisitos="";
       $scope.pacnom="";
        $scope.mensajeCarrerasVacias="";
+       $scope.numcarract="";
+       $scope.requisitosCarrera=[];
+       $scope.requisitos=[];
+       $scope.tareasCarrera=[];
     };
     
    //   Funcion que abre la seccion de seleccion de definicion de tareas 
@@ -71,6 +78,9 @@ function ControladorScrum2($scope,$http) {
       $scope.requisitos="";
       $scope.pacnom="";
        $scope.mensajeCarrerasVacias="";
+       $scope.numcarract="";
+       $scope.requisitos=[];
+       $scope.tareasCarrera=[];
     };
   
 //     Busca los proyectos, llama al servicio que devuelve un listado de los mismos
@@ -89,7 +99,12 @@ function ControladorScrum2($scope,$http) {
   
 //   Busca las carreras de un proyecto en particular
    $scope.fetchCarreras=function(a){
-
+	$scope.requisitosCarrera=[];
+	$scope.requisitos=[];
+	$scope.numcarract="";
+	$scope.tareasCarrera=[];
+	$scope.mensajeCarrerasVacias="";
+	$scope.mensajeReqsVacios="";
 	$scope.proyectoActual=a._id; //id del proyecto con el que trabajo actualmente.
 	$scope.pacnom=a.nombre; //nombre del proyecto.
 	$scope.carrs="block";
@@ -110,9 +125,11 @@ function ControladorScrum2($scope,$http) {
    
    //En esta funcion debo: pedir los requerimientos del proyecto actual
    //y tambien pedir los requerimientos de la carrera.
-    $scope.fetchReqs=function(a){
+    $scope.fetchReqs=function(a,b){
 	 $scope.mensajeCarrerasVacias="";
+	 $scope.mensajeReqsVacios="";
 	$scope.reqss="block";
+	$scope.numcarract=b;
 	$scope.carreraActual=a; //Id de la carrera con la que trabajo actualmente.	
 	//Llamada para pedir los requisitos del proyecto: listarrequisitosproyecto/544cf87f44aec7d4ee558e58
 	var url='http://0.0.0.0:4567/listarrequisitosproyecto/'+$scope.proyectoActual;
@@ -175,9 +192,15 @@ function ControladorScrum2($scope,$http) {
    };
    
     //Funcion que busca las tareas que hay para una carrera dada.
-      $scope.fetchTareas=function(a){
-
+      $scope.fetchTareas=function(a,b){
+	$scope.requisitosCarrera=[];
+	$scope.requisitos=[];
+	$scope.numcarract="";
+	$scope.mensajeCarrerasVacias="";
+	$scope.mensajeReqsVacios="";
+	$scope.tareasCarrera=[];
 	$scope.carreraActual=a;
+	$scope.numcarract=b;
 	$scope.at="block";
 	//$scope.tareasCarrera=["t1","t2"];
 	//Llamo a servicio que me dara las tareas de esa carrera listartareascarrera/544d176d4cb85b483264ff0a

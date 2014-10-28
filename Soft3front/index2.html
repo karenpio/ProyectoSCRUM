@@ -64,7 +64,7 @@
                             </div>
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="pro in carreras">
-                                    <a href="" ng-click="fetchReqs(pro._id)"> {{pro.numero}} </a>
+                                    <a href="" ng-click="fetchReqs(pro._id,pro.numero)"> {{pro.numero}} </a>
                                 </li>
                             </ul>
                         </div>
@@ -88,7 +88,7 @@
                             
                             <div id="left_panel" class="col-md-5 col-md-offset-2 panel panel-default">
                                 <div id="lista_proyectos" class="panel-heading">
-                                    Requisitos para <b>{{carreraActual}}</b>
+                                    Requisitos para la carrera: <b>{{numcarract}}</b>
                                 </div>
                                 <ul class="list-group" >
                                     <li class="list-group-item" ng-repeat="pro in requisitosCarrera">
@@ -124,7 +124,7 @@
                             </div>
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="pro in carreras">
-                                    <a href="" ng-click="fetchTareas(pro._id)"> {{pro.numero}} </a>
+                                    <a href="" ng-click="fetchTareas(pro._id,pro.numero)"> {{pro.numero}} </a>
                                 </li>
                             </ul>
                         </div>
@@ -132,7 +132,7 @@
 
                     <div id="carrerasproye" class="panel panel-default" style="display:{{carrs}}">
                         <div id="lista_proyectos" class="panel-heading">
-                            Tareas para  <b>{{carreraActual}}</b>
+                            Tareas para:  <b>{{numcarract}}</b>
                         </div>  
                         <div id="agergarTarea" class="panel-body">
                             <button type="button" class="btn btn-primary" onclick="mostrarForm()">Agregar tarea</button>

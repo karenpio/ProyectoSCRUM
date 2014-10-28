@@ -1,0 +1,62 @@
+.encabezado{
+	position:left;
+}
+
+body{
+	background-color: white;
+}
+
+a{
+	color: #32bcff;
+	text-decoration: none;
+}
+
+p{
+	color: #32bcff;
+	text-decoration: none;
+}
+
+h3{
+	color: #32bcff;
+	text-decoration: none;
+}
+
+a:focus {
+	color: #648fbf;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #648fbf;
+	text-decoration: none;
+}
+
+h1 {
+    font-size: 400%;
+}
+
+#encabezado{
+	color: white;
+    background-color: #32bcff;
+    padding: 25px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    opacity: .7; 
+}
+
+.titulos{
+    background-color: white;
+    width: 600px;
+    padding: 25px;
+    margin: 10px;
+    opacity: .7; 
+}
+
+#seleccionDeCaracteristicas{
+    width: 600px;
+    padding: 25px;
+    margin: 10px;
+    opacity: .7;
+}
+
+

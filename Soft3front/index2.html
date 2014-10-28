@@ -1,136 +1,181 @@
 <html>
-
     <head>
         <title>SSS:Scrum Support Site</title>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
         <script type="text/javascript" src="controlador2.js"></script>
-         <link   rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
-        <link   rel="stylesheet" type="text/css" href="estilo2.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="index2.css">
     </head>
 
-<body ng-app>
+    <body ng-app>
+        <div ng-controller="ControladorScrum2">
 
-<div ng-controller="ControladorScrum2">
+            <nav class="navbar navbar-default" role="navigation">
+              <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" ng-click="volverHome()" href="#">SCRUM</a>
+                </div>
 
-<div class="container-fluid" id="encabezado"> <h1> SSS: Scrum Support Site </h1></div>
-{{mensaje}}
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <ul class="nav navbar-nav">
+                    <li>
+                        <a href="" ng-click="scarOpen()">Seleccion de caracteristicas</a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="deftaOpen()">Definir tareas</a>
+                    </li>
+                </div><!-- /.navbar-collapse -->
+              </div><!-- /.container-fluid -->
+            </nav>
 
-<!--"Menu" inicial-->
- <h2><a href="" ng-click="scarOpen()">Seleccion de caracteristicas</a> <h2>
-<hr></hr>
-<h2><a href="" ng-click="deftaOpen()">Definir tareas</a><h2>
+            <div id="cuerpo">
+                <div ng-show="mensaje" class="alert alert-danger" role="alert">
+                    {{mensaje}}
+                </div>
+                <!--Seccion para seleccionar las caracteristicas-->
+                <div id="seleccionDeCaracteristicas" style="display:{{scar}}">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="" id="lista_proyectos" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
+                        </div>
 
-<!--Seccion para seleccionar las caracteristicas-->
-<div id="seleccionDeCaracteristicas" style="display:{{scar}}" >
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="pro in proyectos">
+                                <a href="" class="a_black" ng-click="fetchCarreras(pro)"> {{pro.nombre}} </a>
+                            </li>
+                        </ul>
+                    </div>
 
-  <hr></hr>
+                    <div id="carrerasproye" style="display:{{carrs}}">
+                        <div class="panel panel-default">
+                            <div id="lista_proyectos" class="panel-heading">
+                                Carreras para  <b>{{pacnom}}</b>
+                            </div>
+                            <div ng-show="mensajeCarrerasVacias" class="panel-body">
+                                {{mensajeCarrerasVacias}}
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="pro in carreras">
+                                    <a href="" ng-click="fetchReqs(pro._id)"> {{pro.numero}} </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>  <!--Div carrs-->
 
-  <a href="" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
-  
-  <ul ng-repeat="pro in proyectos">
-  <li><a href="" ng-click="fetchCarreras(pro)">
-  {{pro.nombre}}
-  </a></li>
-  </ul>
-  
-<div id="carrerasproye" style="display:{{carrs}}">
-  Carreras para el proyecto seleccionado [{{pacnom}}]
-  <br></br>
-  {{mensajeCarrerasVacias}}
-  <ul ng-repeat="pro in carreras">
-  <li><a href="" ng-click="fetchReqs(pro._id)">
-  {{pro.numero}}
-  </a></li>
-  </ul>
-  <a href="" ng-click="volverHome()"> Volver </a>
-</div>  <!--Div carrs-->
+                    <div id="reqsProye" style="display:{{carrs}}">
+                        <div id="reqss" class="row" style="display:{{reqss}}">
+                            <div id="left_panel" class="col-md-5 panel panel-default">
+                                <div id="lista_proyectos" class="panel-heading">
+                                    Requisitos para <b>{{pacnom}}</b>
+                                </div>
+                                <div ng-show="mensajeReqsVacios" class="panel-body">
+                                    {{mensajeReqsVacios}}
+                                </div>
+                                <ul class="list-group" >
+                                    <li class="list-group-item" ng-repeat="pro in requisitos">
+                                        <a href="" ng-click="addReq(pro)"> {{pro.nombre}} </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div id="left_panel" class="col-md-5 col-md-offset-2 panel panel-default">
+                                <div id="lista_proyectos" class="panel-heading">
+                                    Requisitos para <b>{{carreraActual}}</b>
+                                </div>
+                                <ul class="list-group" >
+                                    <li class="list-group-item" ng-repeat="pro in requisitosCarrera">
+                                        <a href="" ng-click="fetchReqs(pro.nombre)"> {{pro.nombre}} </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div> <!--div reqss-->
+                    </div><!-- div reqsProye-->
+                </div>  <!--Div scar--> <!--Final de seccion de seleccion de caracteristicas-->
 
-  <div id="reqsProye" style="display:{{carrs}}">
-    <div id="reqss" style="display:{{reqss}}">
-    <hr></hr>
-    Requisitos para el proyecto seleccionado [{{pacnom}}]
-    <br></br>
-    {{mensajeReqsVacios}}
-    <br></br>
-    <ul ng-repeat="pro in requisitos">
-    <li><a href="" ng-click="addReq(pro)">
-    {{pro.nombre}}
-    </a></li>
+                <!--Seccion para definir tareas a una carrera de un proyecto.-->
+                <div id="seleccionDefinirTareas" style="display:{{defta}}" >
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="" id="lista_proyectos" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
+                        </div>
 
-    </ul>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="pro in proyectos">
+                                <a href="" class="a_black" ng-click="fetchCarreras(pro)"> {{pro.nombre}} </a>
+                            </li>
+                        </ul>
+                    </div>
 
-    Requisitos para la carrera seleccionada [{{carreraActual}}]
-    <ul ng-repeat="pro in requisitosCarrera">
-    <li><a href="" ng-click="fetchReqs(pro.nombre)">
-    {{pro.nombre}}
-    </a></li>
-    </ul>
-    <a href="" ng-click="volverHome()"> Volver </a>
-    </div> <!--div reqss-->
+                    <div id="carrerasproye" style="display:{{carrs}}">
+                        <div class="panel panel-default">
+                            <div id="lista_proyectos" class="panel-heading">
+                                Carreras para  <b>{{pacnom}}</b>
+                            </div>
+                            <div ng-show="mensajeCarrerasVacias" class="panel-body">
+                                {{mensajeCarrerasVacias}}
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="pro in carreras">
+                                    <a href="" ng-click="fetchTareas(pro._id)"> {{pro.numero}} </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>  <!--Div carrs-->
 
-  </div><!-- div reqsProye-->
-</div>  <!--Div scar--> <!--Final de seccion de seleccion de caracteristicas-->
+                    <div id="carrerasproye" class="panel panel-default" style="display:{{carrs}}">
+                        <div id="lista_proyectos" class="panel-heading">
+                            Tareas para  <b>{{carreraActual}}</b>
+                        </div>  
+                        <div id="agergarTarea" class="panel-body">
+                            <button type="button" class="btn btn-primary" onclick="mostrarForm()">Agregar tarea</button>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="pro in tareasCarrera">
+                                <a href=""> {{pro.nombre}} </a>
+                            </li>
+                        </ul>
 
-<!--Seccion para definir tareas a una carrera de un proyecto.-->
-<div id="seleccionDefinirTareas" style="display:{{defta}}" >
-  <hr></hr>
-  <a href="" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
-    
-    <ul ng-repeat="pro in proyectos">
-    <li><a href="" ng-click="fetchCarreras(pro)">
-    {{pro.nombre}}
-    </a></li>
-    </ul>
+                    </div>
 
-    <div id="carrerasproye" style="display:{{carrs}}">
-    Carreras para el proyecto seleccionado [{{pacnom}}]
-    
-    <br></br>
-  {{mensajeCarrerasVacias}}
-    <ul ng-repeat="pro in carreras">
-    <li><a href="" ng-click="fetchTareas(pro._id)">
-    {{pro.numero}}
-    </a></li>
-    </ul>
-
-
-    </div>  <!--Div carrs-->
-
-    <div id="carrerasproye" style="display:{{carrs}}">
-    Tareas para la carrera seleccionada: [{{carreraActual}}]
-    <ul ng-repeat="pro in tareasCarrera">
-    <li><a href="">
-    {{pro.nombre}}
-    </a></li>
-    </ul>
-    <br></br>
-    <a href="" ng-click="volverHome()"> Volver </a>
-    
-    <div id="addta" style="display:{{at}}">
-      <!--Para agregar una tarea-->
-      <br></br>
-      <form ng-submit="addTarea()">
-	  <label> Nombre Tarea </label>
-	  <input type="text" ng-model="nomTarea" placeholder="Identificador de la tarea">
-	  <br> </br>
-	  <label> Peso </label>
-	  <input type="text" ng-model="pesoTarea" placeholder="Peso">
-	  <br> </br>
-	  <label> estado </label>
-	  <input type="text" ng-model="estadoTarea" placeholder="Estado">
-	  <br> </br>
-	  <label> fechaFin </label>
-	  <input type="text" ng-model="fechaTarea" placeholder="01/02/2014">
-	  <br> </br>
-	  <button type="submit"> Agregar </button>
-      </form>  
-     <a href="" ng-click="volverHome()"> Volver </a>
-    </div> <!--Div add tarea-->
-
-</div> <!--Div defta-->
-
-</div> <!--Div controller-->
-
-</body>
-
+                    <div id="addta" style="display:{{at}}; width:50%">
+                        <!--Para agregar una tarea-->
+                        <form id="formulario" role="form" ng-submit="addTarea()" style="display:none">
+                          <div class="form-group">
+                            <label for="nomTarea">Tarea</label>
+                            <input type="text" id="nomTarea" class="form-control" ng-model="nomTarea" placeholder="Identificador de la tarea">
+                          </div>
+                          <div class="form-group">
+                            <label for="pesoTarea">Peso</label>
+                            <input type="text" id="pesoTarea" class="form-control" ng-model="pesoTarea" placeholder="Peso">
+                          </div>
+                          <div class="form-group">
+                            <label for="estadoTarea">Estado</label>
+                            <input type="text" id="estadoTarea" class="form-control" ng-model="estadoTarea" placeholder="Estado">
+                          </div>
+                          <div class="form-group">
+                            <label for="fechaTarea">Fecha Fin</label>
+                            <input type="text" id="fechaTarea" class="form-control" ng-model="fechaTarea" placeholder="01/02/2014">
+                          </div>
+                          <button type="submit" class="btn btn-primary">Agregar</button>
+                        </form>
+                    </div> <!--Div add tarea-->
+                </div> <!--Div defta-->
+            </div>
+        </div> <!--Div controller-->
+    </body>
 </html>
+
+<script type="text/javascript">
+    function mostrarForm() {
+        document.getElementById("agergarTarea").style.display = "none";
+        document.getElementById("formulario").style.display = "block";
+    }
+</script>

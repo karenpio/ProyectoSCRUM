@@ -11,6 +11,8 @@ function ControladorScrum2($scope,$http) {
   $scope.mensajeCarrerasVacias="";
   $scope.mensajeReqsVacios="";
   $scope.pacnom="";
+  $scope.atBoton = "block";
+  $scope.form ="none";
   
 //   Funcion de regreso: inicializa todas las variables a su estado inicial.
   $scope.volverHome=function(){
@@ -107,6 +109,10 @@ function ControladorScrum2($scope,$http) {
 	$scope.mensajeReqsVacios="";
 	$scope.proyectoActual=a._id; //id del proyecto con el que trabajo actualmente.
 	$scope.pacnom=a.nombre; //nombre del proyecto.
+        $scope.reqss = "none";
+        $scope.at = "none";
+        $scope.atBoton = "block";
+        $scope.form ="none";
 	$scope.carrs="block";
 	//Debo llamar al servicio que me dara las carreras para el proyecto de _id
 	//Armo el string:
@@ -240,6 +246,11 @@ function ControladorScrum2($scope,$http) {
 	$scope.mensaje="mal";
       });
 	
+   };
+   
+   $scope.mostrarForm = function(){
+     $scope.atBoton = "none";
+     $scope.form ="block";
    };
 			  
   }

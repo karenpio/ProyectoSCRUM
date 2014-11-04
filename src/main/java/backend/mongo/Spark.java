@@ -126,8 +126,7 @@ public class Spark {
         });
         
         /*
-         Dado un id de carrera pasado por url, buscamos todos las tareas
-         que estan asociados a ella y devolvemos una lista de json de tareas
+           Se busca la lista de participantes y se devuelve
          */
         get(new Route("/participantes") {
             @Override
@@ -139,6 +138,44 @@ public class Spark {
                 return participantes;
             }
         });
+        
+        get(new Route("/getParticipantesDisponibles/:proyectoId"){
+            @Override
+            public Object handle(Request request, Response response) {
+                String proyId = request.params(":proyectoId");
+                JSONArray participantesProy = 
+                        servicioBDProyecto.obtenerParticipantesProyecto(proyId);
+                
+                JSONArray participantes = servicioBDProyecto.listarParticipantes();
+                JSONArray participantesDisponibles = new JSONArray();
+                boolean[] noDisp = new boolean[participantes.length()];
+                
+                for(int i = 0; i < participantesProy.length(); i++){
+                    String emailParticipanteNoDisponible = participantesProy.getString(i);
+                    for(int j = 0 ; j < participantes.length(); j++){
+                        JSONObject participante = participantes.getJSONObject(j);
+                        if(participante.getString("email").equals(emailParticipanteNoDisponible)){
+                            noDisp[j] = true;
+                            
+                        }
+                    }
+                }
+                
+                for(int i = 0; i< participantes.length(); i++){
+                    JSONObject participante = participantes.getJSONObject(i);
+                    if(!noDisp[i]){
+                        participantesDisponibles.put(participante);
+                    }
+                    
+                    
+                }
+
+                return participantesDisponibles;
+            }
+        
+        });
+        
+
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */

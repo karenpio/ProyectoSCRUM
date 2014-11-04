@@ -187,6 +187,17 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
+    
+    public JSONArray obtenerParticipantesProyecto(String proyectoId){
+        JSONObject proy = obtenerProyecto(proyectoId);
+        if(!proy.has("participantes")){
+            return new JSONArray();
+        }
+        JSONArray listaPartProy =  proy.getJSONArray("participantes");
+        
+        
+        return listaPartProy;
+    }
 
     /*
      Dado el id de un proyecto, buscamos dicho proyecto, obtenemos

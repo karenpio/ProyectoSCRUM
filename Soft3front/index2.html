@@ -43,6 +43,7 @@
                 <!--Seccion para seleccionar las caracteristicas-->
                 <div id="seleccionDeCaracteristicas" style="display:{{scar}}">
                     <div class="panel panel-default">
+                        <h2> Seleccion de Caracteristicas </h2>
                         <div class="panel-heading">
                             <a href="" id="lista_proyectos" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
                         </div>
@@ -103,6 +104,7 @@
                 <!--Seccion para definir tareas a una carrera de un proyecto.-->
                 <div id="seleccionDefinirTareas" style="display:{{defta}}" >
                     <div class="panel panel-default">
+                        <h2>Definir Tareas</h2>
                         <div class="panel-heading">
                             <a href="" id="lista_proyectos" ng-click="fetchProjects()">Obtener Lista de Proyectos</a>
                         </div>
@@ -130,12 +132,12 @@
                         </div>
                     </div>  <!--Div carrs-->
 
-                    <div id="carrerasproye" class="panel panel-default" style="display:{{carrs}}">
+                    <div id="carrerasproye" class="panel panel-default" style="display:{{at}}">
                         <div id="lista_proyectos" class="panel-heading">
                             Tareas para:  <b>{{numcarract}}</b>
                         </div>  
                         <div id="agergarTarea" class="panel-body">
-                            <button type="button" class="btn btn-primary" onclick="mostrarForm()">Agregar tarea</button>
+                            <button type="button" class="btn btn-primary" ng-click="mostrarForm()" style="display:{{atBoton}}">Agregar tarea</button>
                         </div>
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="pro in tareasCarrera">
@@ -147,7 +149,7 @@
 
                     <div id="addta" style="display:{{at}}; width:50%">
                         <!--Para agregar una tarea-->
-                        <form id="formulario" role="form" ng-submit="addTarea()" style="display:none">
+                        <form id="formulario" role="form" ng-submit="addTarea()" style="display:{{form}}">
                           <div class="form-group">
                             <label for="nomTarea">Tarea</label>
                             <input type="text" id="nomTarea" class="form-control" ng-model="nomTarea" placeholder="Identificador de la tarea">

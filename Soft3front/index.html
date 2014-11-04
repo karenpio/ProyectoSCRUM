@@ -38,7 +38,40 @@
       </form>
      <a href="" ng-click="volverHome()">  Volver </a>
     </div> <!--Div creacion de proyectos-->
-
+    <hr></hr>
+    <h2> <a ng-click="listarProyectos()" href=""> Listar Proyectos Existentes </a> </h2>
+    
+    <!-- Seccion para revisar los proyectos existentes -->
+    <div id="ListarProyectos" style="display:{{parteListarProy}}">
+      <h3> Lista de proyectos actuales: </h3>
+	<ul ng-repeat="pro in proyectos">
+	  <li><a href="" ng-click="abrirDetallesProyecto(pro)">
+	  {{pro.nombre}}
+	  </a></li>
+          
+          
+	</ul>
+    <!--Seccion de detalles para un proyecto-->
+    <div id="DetallesProyecto" style="display:{{parteDetalleP}}">
+          </br>
+          <h4 style="font-weight:bold;"> {{proyectoActual.nombre}}</h4>
+          <div style="font-weight:bold;">Descripcion:</div>
+          <div>{{proyectoActual.descripcion}}</div>
+              </br>
+          <div style="font-weight:bold;">Participantes:</div>
+              <ul ng-repeat="part in proyectoActual.participantes">
+                  {{part}} - <a href="" ng-click="eliminarPart(part)"> Desasociar del proyecto </a>
+              </ul>
+          </br>
+          <a href="" ng-click ="cerrarDetalleP()">Cerrar Detalles</a>
+          
+      </div>
+      
+      
+      
+     <a href="" ng-click="volverHome()">  Volver </a>
+    </div> <!-- Div listar proyectos-->
+    
     <hr></hr>
 
     <h2> <a ng-click="abrirManejoParticipantes()" href=""> Manejo de Participantes de Proyectos </a> </h2>
@@ -64,6 +97,9 @@
 	  {{pro.nombre}}
 	  </a></li>
       </ul> 
+      <p ng-show= "mensajeParticipantesVacio"> 
+              {{mensajeParticipantesVacio}} 
+          </p>
      
       <a href="" ng-click="volverHome()">Volver</a>
     </div> <!--Div agregado de participantes-->

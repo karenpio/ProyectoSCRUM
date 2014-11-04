@@ -7,7 +7,8 @@ function ControladorScrum($scope,$http) {
   $scope.parteAgregarParticipantes="none";
   $scope.mensaje="iksajiasjidasjio";
   $scope.papi="papi";
-  
+  $scope.parteListarProy = "none";
+  $scope.parteDetalleP = "none";
   //Variable del modelo referente al participante que se agregara a un
   //proyecto.
   $scope.participante="";
@@ -21,6 +22,46 @@ function ControladorScrum($scope,$http) {
   $scope.abrirCreacionProyectos=function(){
     $scope.parteCreacion="block";
     $scope.parteManejoParticipantes="none";
+    $scope.parteAgregarParticipantes="none";
+    $scope.parteListarProy ="none";
+    $scope.parteDetalleP = "none";
+  };
+  
+  
+  //Funcion que despliega los proyectos existentes para revisar su informacion
+  $scope.listarProyectos=function(){
+      $http.get('http://0.0.0.0:4567/listarproyectos')
+      .success(function(data){
+	$scope.parteCreacion="none";
+	$scope.parteManejoParticipantes="none";
+        $scope.parteAgregarParticipantes="none";
+        $scope.parteListarProy = "block";
+        $scope.parteDetalleP = "none";
+	$scope.proyectos=data;
+	//$scope.mensaje=data;
+	$scope.papi=data;
+      })
+      .error(function(data,status){
+      $scope.mensaje = status;
+
+      });
+      
+  };
+  
+  //Funcion que despliega los detalles de un proyecto
+  $scope.abrirDetallesProyecto=function(a){
+      
+    $scope.proyectoActual=a; //Objeto del proyecto actual.
+
+      
+    $scope.parteDetalleP ="block";
+
+  };
+  
+  
+  //Funcion que cierra los detalles de un proyecto
+  $scope.cerrarDetalleP=function(){
+       $scope.parteDetalleP="none";
   };
   
   //Funcion que despliega la seccion de manejo de participantes en el html.
@@ -29,6 +70,9 @@ function ControladorScrum($scope,$http) {
       .success(function(data){
 	$scope.parteCreacion="none";
 	$scope.parteManejoParticipantes="block";
+        $scope.parteAgregarParticipantes="none";
+        $scope.parteListarProy = "none";
+        $scope.parteDetalleP = "none";
 	$scope.proyectos=data;
 	//$scope.mensaje=data;
 	$scope.papi=data;
@@ -47,7 +91,9 @@ function ControladorScrum($scope,$http) {
     $scope.proyectoActual=null;
     $scope.parteCreacion="none";
     $scope.parteAgregarParticipantes="none";
-    $scope.parteManejoParticipantes="none"; 
+    $scope.parteManejoParticipantes="none";
+    $scope.parteListarProy ="none";
+    $scope.parteDetalleP ="none";
     $scope.nombreProyecto="";
     $scope.descrProyecto="";
     $scope.productoProyecto="";
@@ -71,6 +117,9 @@ function ControladorScrum($scope,$http) {
     }).success(function(data){
       $scope.parteCreacion="none";
       $scope.parteManejoParticipantes="none";
+      
+      $scope.parteListarProy ="none";
+      $scope.parteDetalleP = "none";
       $scope.home="none";
       $scope.mensajeExito="block";  
       $scope.nombreProyecto="";
@@ -96,11 +145,15 @@ function ControladorScrum($scope,$http) {
 // 	$scope.proyectoActual=$scope.proyectos[j];
 //       }
 //     }
-    
+    $scope.mensajeParticipantesVacio ="";
     $scope.proyectoActual=a; //Objeto del proyecto actual.
     //Debo listar los participantes que hay en la bd.
-     $http.get('http://0.0.0.0:4567/participantes')
+    var url='http://0.0.0.0:4567/getParticipantesDisponibles/'+a._id;
+     $http.get(url)
       .success(function(data){
+        if(data.length == 0){
+            $scope.mensajeParticipantesVacio = "Todos los participantes estan asociados al proyecto.";
+        }  
 	$scope.participantes=data;
 	$scope.mensaje="yipi";
       })
@@ -108,9 +161,13 @@ function ControladorScrum($scope,$http) {
       $scope.mensaje = status;
 
       });
+      
+    
     $scope.parteAgregarParticipantes="block";
     $scope.parteManejoParticipantes="none";
   };
+  
+  
   
   //Agrega un participante a la lista de participantes del proyectoActual
   $scope.agregarParticipante=function(a){
@@ -152,15 +209,24 @@ function ControladorScrum($scope,$http) {
   
   //Funcion para eliminar un participante del proyecto actual con el que
   //se trabaja.
-  $scope.eliminarPart=function(re){
-    //Busco index en el arreglo del req a eliminar y luego uso splice
+  $scope.eliminarPart=function(a,proy){
+    $http({
+        method  : 'PUT',
+        url     : 'http://localhost:4567/desasociarparticipante',
+	data: "email="+a+"&proyectoId="+$scope.proyectoActual._id,
+	headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+    }).success(function(data){
+      $scope.listarProyectos();
+  
+    })
+    .error(function(data,status){
+      $scope.mensaje=status;
+      $scope.mensaje=data;
+    });
+    
 
-    for (w=0;w<$scope.proyectoActual.participantes.length;w++){
-      if ($scope.proyectoActual.participantes[w]== re){
-	$scope.proyectoActual.participantes.splice(w,1);
-      }
-    }
-  }
+    
+  };
   
   
 }

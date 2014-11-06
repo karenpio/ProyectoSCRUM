@@ -23,3 +23,7 @@ Nota: Asegurense de instalar bien mongo y maven porque sino ocurriran problemas.
 Cuando abran el proyecto en netbeans asegurense de resolver las dependencias (click derecho sobre
 el nombre del proyecto -> resolve problems).
 
+Para correrlo: Ejecutar Spark.java en netbeans y abrir el navegador desde el terminal de la siguiente manera:
+  Google-chrome --disable-websecurity
+  chromium-browser --disable-websecurity
+

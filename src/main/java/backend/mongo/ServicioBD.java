@@ -87,6 +87,21 @@ public class ServicioBD {
         return formatearJSON(doc);
     }
 
+    /*
+        Se borra de la bd el documento correspondiente a la tarea que se
+    quiere eliminar.
+    */
+    public JSONObject eliminarTarea(String tareaId){
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(tareaId));
+
+        DBObject doc = tarea.findOne(query);
+        tarea.remove(doc);
+
+        return formatearJSON(doc);
+    }
+    
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
      Retorna true si ya existe un proyecto con el nombre dado
@@ -493,6 +508,40 @@ public class ServicioBD {
         ObjectId idTarea = new ObjectId(tareaId);
         if (!lista.contains(idTarea)) {
             lista.add(idTarea);
+            carr.put("tareas", lista);
+            carrera.save(carr);
+        }
+
+        return formatearJSON(carr);
+    }
+
+    public JSONObject desasociarTareaCarrera(String carreraId, String tareaId) {
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carreraId));
+
+        DBObject carr = carrera.findOne(query);
+
+        // Se revisa si se encontro la carrera
+        if (carr == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si la carrera ya tiene requisitos asociados.
+        if (carr.containsField("tareas")) {
+            lista = (BasicDBList) carr.get("tareas");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si la carrera tiene a ese requisito para eliminarlo.
+        ObjectId idTarea = new ObjectId(tareaId);
+        if (lista.contains(idTarea)) {
+            lista.remove(idTarea);
             carr.put("tareas", lista);
             carrera.save(carr);
         }

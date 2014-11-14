@@ -340,6 +340,38 @@ public class Spark {
                 return doc;
             }
         });
+        
+        /*
+            Desasociar una tarea de una carrera y eliminar la tarea de la bd, ya que
+        la tarea sola no existe.
+        */
+        put(new Route("/desasociartareacarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idTar = request.queryParams("tareaId");
+
+                JSONObject carrera = servicioBDProyecto.desasociarTareaCarrera(idCarr, idTar);
+                
+                JSONObject doc = servicioBDProyecto.eliminarTarea(idTar);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                if (carrera.has("requisitos")) {
+                    JSONArray auxList = carrera.getJSONArray("requisitos");
+                    carrera.put("requisitos", limpiarListaId(auxList));
+                }
+                if (carrera.has("tareas")) {
+                    JSONArray auxList = carrera.getJSONArray("tareas");
+                    carrera.put("tareas", limpiarListaId(auxList));
+                }
+                return carrera;
+
+            }
+        });
+        
+
 
         /*
          Dado un _id de proyecto y un email de participante, se actualiza el proyecto

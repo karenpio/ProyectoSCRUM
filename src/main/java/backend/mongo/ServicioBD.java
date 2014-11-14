@@ -8,6 +8,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
+import java.util.Date;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -98,6 +99,26 @@ public class ServicioBD {
 
         DBObject doc = tarea.findOne(query);
         tarea.remove(doc);
+
+        return formatearJSON(doc);
+    }
+    
+    /*
+        Se actualizan todos los parametros de una tarea a excepcion del nombre
+    */
+    public JSONObject actualizarTarea(JSONObject tar) {   
+        BasicDBObject nuevoDoc = new BasicDBObject();
+	nuevoDoc.append("$set", new BasicDBObject().append("peso", tar.get("peso"))
+                .append("estado", tar.get("estado"))
+                .append("fechaFin", tar.get("fechaFin")));
+        
+        System.out.println(nuevoDoc);
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(tar.get("_id").toString()));
+
+        tarea.update(query, nuevoDoc);
+        DBObject doc = tarea.findOne(query);
 
         return formatearJSON(doc);
     }

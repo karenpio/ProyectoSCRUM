@@ -342,6 +342,32 @@ public class Spark {
         });
         
         /*
+            Se actualiza una tarea a partir de los datos que se reciben sobre la misma.
+            Se pueden actualizar todos los parametros menos el nombre
+        */
+        put(new Route("/actualizartarea") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idTar = request.queryParams("tareaId");
+                String peso = request.queryParams("peso");
+                String estado = request.queryParams("estado");
+                String fechaFin = request.queryParams("fechaFin");
+
+                JSONObject doc;
+                JSONObject tarea = new JSONObject();
+
+                tarea.put("_id", idTar);
+                tarea.put("peso", peso);
+                tarea.put("estado", estado);
+                tarea.put("fechaFin", fechaFin);
+
+                doc = servicioBDProyecto.actualizarTarea(tarea);
+
+                return doc;
+            }
+        });
+        
+        /*
             Desasociar una tarea de una carrera y eliminar la tarea de la bd, ya que
         la tarea sola no existe.
         */

@@ -187,15 +187,14 @@ public class ServicioBD {
         return formatearJSON(doc);
 
     }
-    
-    public JSONArray obtenerParticipantesProyecto(String proyectoId){
+
+    public JSONArray obtenerParticipantesProyecto(String proyectoId) {
         JSONObject proy = obtenerProyecto(proyectoId);
-        if(!proy.has("participantes")){
+        if (!proy.has("participantes")) {
             return new JSONArray();
         }
-        JSONArray listaPartProy =  proy.getJSONArray("participantes");
-        
-        
+        JSONArray listaPartProy = proy.getJSONArray("participantes");
+
         return listaPartProy;
     }
 
@@ -422,6 +421,47 @@ public class ServicioBD {
     }
 
     /*
+     Desasociar un requisito a una carrera dado su ID. En carrera se tiene una
+     lista de requisitos en la que adentro se tienen los objectId de todos
+     los requisitos asociados. 
+     */
+    public JSONObject desasociarRequisitoCarrera(String carreraId, String reqId) {
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carreraId));
+
+        System.out.println(query);
+
+        DBObject carr = carrera.findOne(query);
+
+        // Se revisa si se encontro la carrera.
+        if (carr == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si la carrera ya tiene requisitos asociados.
+        if (carr.containsField("requisitos")) {
+            lista = (BasicDBList) carr.get("requisitos");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si la carrera tiene a ese requisito.
+        ObjectId idReq = new ObjectId(reqId);
+        if (lista.contains(idReq)) {
+            lista.remove(idReq);
+            carr.put("requisitos", lista);
+            carrera.save(carr);
+        }
+
+        return formatearJSON(carr);
+    }
+
+    /*
      Asociar una tarea a una carrera dado su ID. En carrera se tiene una
      lista de tareas en la que adentro se tienen los objectId de todas
      las tareas asociadas. 
@@ -557,7 +597,7 @@ public class ServicioBD {
         }
         return resultados;
     }
-    
+
     // Coloca en una lista todos los participantes que estan en la BD
     @SuppressWarnings("unchecked")
     public JSONArray listarParticipantes() {

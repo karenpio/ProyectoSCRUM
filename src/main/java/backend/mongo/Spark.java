@@ -124,58 +124,55 @@ public class Spark {
                 return listaTareas;
             }
         });
-        
+
         /*
-           Se busca la lista de participantes y se devuelve
+         Se busca la lista de participantes y se devuelve
          */
         get(new Route("/participantes") {
             @Override
             public Object handle(Request request, Response response) {
 
-                JSONArray participantes = 
-                        servicioBDProyecto.listarParticipantes();
+                JSONArray participantes
+                        = servicioBDProyecto.listarParticipantes();
 
                 return participantes;
             }
         });
-        
-        get(new Route("/getParticipantesDisponibles/:proyectoId"){
+
+        get(new Route("/getParticipantesDisponibles/:proyectoId") {
             @Override
             public Object handle(Request request, Response response) {
                 String proyId = request.params(":proyectoId");
-                JSONArray participantesProy = 
-                        servicioBDProyecto.obtenerParticipantesProyecto(proyId);
-                
+                JSONArray participantesProy
+                        = servicioBDProyecto.obtenerParticipantesProyecto(proyId);
+
                 JSONArray participantes = servicioBDProyecto.listarParticipantes();
                 JSONArray participantesDisponibles = new JSONArray();
                 boolean[] noDisp = new boolean[participantes.length()];
-                
-                for(int i = 0; i < participantesProy.length(); i++){
+
+                for (int i = 0; i < participantesProy.length(); i++) {
                     String emailParticipanteNoDisponible = participantesProy.getString(i);
-                    for(int j = 0 ; j < participantes.length(); j++){
+                    for (int j = 0; j < participantes.length(); j++) {
                         JSONObject participante = participantes.getJSONObject(j);
-                        if(participante.getString("email").equals(emailParticipanteNoDisponible)){
+                        if (participante.getString("email").equals(emailParticipanteNoDisponible)) {
                             noDisp[j] = true;
-                            
+
                         }
                     }
                 }
-                
-                for(int i = 0; i< participantes.length(); i++){
+
+                for (int i = 0; i < participantes.length(); i++) {
                     JSONObject participante = participantes.getJSONObject(i);
-                    if(!noDisp[i]){
+                    if (!noDisp[i]) {
                         participantesDisponibles.put(participante);
                     }
-                    
-                    
+
                 }
 
                 return participantesDisponibles;
             }
-        
-        });
-        
 
+        });
 
         /* Se agrega en la bd un proyecto con los parametros que son pasados por url
          */
@@ -289,7 +286,32 @@ public class Spark {
 
             }
         });
-        
+
+        put(new Route("/desasociarrequisitocarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idReq = request.queryParams("requisitoId");
+
+                JSONObject carrera = servicioBDProyecto.desasociarRequisitoCarrera(idCarr, idReq);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                if (carrera.has("requisitos")) {
+                    JSONArray auxList = carrera.getJSONArray("requisitos");
+                    carrera.put("requisitos", limpiarListaId(auxList));
+                }
+                if (carrera.has("tareas")) {
+                    JSONArray auxList = carrera.getJSONArray("tareas");
+                    carrera.put("tareas", limpiarListaId(auxList));
+                }
+                return carrera;
+
+            }
+        });
+
+
         /*
          Se crea una tarea a partir de los datos que son suministrados.
          Posteriormente se debe asociar tarea con carrera
@@ -312,9 +334,9 @@ public class Spark {
                 tarea.put("fechaFin", fechaFin);
 
                 doc = servicioBDProyecto.crearTarea(tarea);
-                JSONObject carrera = 
-                        servicioBDProyecto.asociarTareaCarrera(idCarr, doc.getString("_id"));
-                
+                JSONObject carrera
+                        = servicioBDProyecto.asociarTareaCarrera(idCarr, doc.getString("_id"));
+
                 return doc;
             }
         });

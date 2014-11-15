@@ -1,6 +1,8 @@
 function ControladorScrum2($scope,$http) {
+  $scope.reporteTar="none";
   $scope.scar="none";
   $scope.defta="none";
+  $scope.proys="none";
   $scope.proyectoActual="";
   $scope.carreraActual="";
   $scope.reqActual="";
@@ -18,6 +20,8 @@ function ControladorScrum2($scope,$http) {
   $scope.volverHome=function(){
     $scope.scar="none";
     $scope.defta="none";
+    $scope.reporteTar="none";
+    $scope.proys="none";
     $scope.at="none";
     $scope.carrs="none";
     $scope.tareasCarrera=[];
@@ -41,6 +45,8 @@ function ControladorScrum2($scope,$http) {
 //   Funcion que abre la seccion de seleccion de caracteristicas
     $scope.scarOpen=function(){
       $scope.scar="block";
+      $scope.proys="block";
+      $scope.reporteTar="none";
       $scope.defta="none";
       $scope.at="none";
       $scope.carrs="none";
@@ -65,6 +71,32 @@ function ControladorScrum2($scope,$http) {
    //   Funcion que abre la seccion de seleccion de definicion de tareas 
     $scope.deftaOpen=function(){
       $scope.defta="block";
+      $scope.proys="block";
+      $scope.reporteTar="none";
+      $scope.scar="none";
+      $scope.carrs="none";
+      $scope.at="none";
+      $scope.carreras=[];
+      $scope.requisitosCarrera=[];
+      $scope.proyectos=[];
+      $scope.proyectoActual="";
+      $scope.carreraActual="";
+      $scope.reqActual="";
+      $scope.mensajeCarrerasVacias="";
+      $scope.mensajeReqsVacios="";
+      $scope.tareasCarrera="";
+      $scope.requisitos="";
+      $scope.pacnom="";
+       $scope.mensajeCarrerasVacias="";
+       $scope.numcarract="";
+       $scope.requisitos=[];
+       $scope.tareasCarrera=[];
+    };
+    //Funcion que despliega las opciones para reporte de tareas completadas
+    $scope.reporteTarOpen=function(){
+      $scope.reporteTar="block";
+      $scope.proys="block";
+      $scope.defta="none";
       $scope.scar="none";
       $scope.carrs="none";
       $scope.at="none";
@@ -91,6 +123,8 @@ function ControladorScrum2($scope,$http) {
       .success(function(data){
 	$scope.parteCreacion="none";
 	$scope.parteManejoParticipantes="block";
+        $scope.carrs="none";
+        $scope.proys="block";
 	$scope.proyectos=data;
       })
       .error(function(data,status){
@@ -107,12 +141,13 @@ function ControladorScrum2($scope,$http) {
 	$scope.tareasCarrera=[];
 	$scope.mensajeCarrerasVacias="";
 	$scope.mensajeReqsVacios="";
-	$scope.proyectoActual=a._id; //id del proyecto con el que trabajo actualmente.
+	$scope.proyectoActual=a; //id del proyecto con el que trabajo actualmente.
 	$scope.pacnom=a.nombre; //nombre del proyecto.
         $scope.reqss = "none";
         $scope.at = "none";
         $scope.atBoton = "block";
         $scope.form ="none";
+        $scope.proys="none";
 	$scope.carrs="block";
 	//Debo llamar al servicio que me dara las carreras para el proyecto de _id
 	//Armo el string:
@@ -138,7 +173,7 @@ function ControladorScrum2($scope,$http) {
 	$scope.numcarract=b;
 	$scope.carreraActual=a; //Id de la carrera con la que trabajo actualmente.	
 	//Llamada para pedir los requisitos del proyecto: listarrequisitosproyecto/544cf87f44aec7d4ee558e58
-	var url='http://0.0.0.0:4567/listarrequisitosproyecto/'+$scope.proyectoActual;
+	var url='http://0.0.0.0:4567/listarrequisitosproyecto/'+$scope.proyectoActual._id;
 	$http.get(url).
 	success(function(data, status, headers, config) {
 	  if (data.length == 0){
@@ -207,6 +242,7 @@ function ControladorScrum2($scope,$http) {
 	$scope.tareasCarrera=[];
 	$scope.carreraActual=a;
 	$scope.numcarract=b;
+        $scope.carrs="none";
 	$scope.at="block";
 	//$scope.tareasCarrera=["t1","t2"];
 	//Llamo a servicio que me dara las tareas de esa carrera listartareascarrera/544d176d4cb85b483264ff0a
@@ -214,7 +250,30 @@ function ControladorScrum2($scope,$http) {
 	$http.get(url).
 	success(function(data, status, headers, config) {
 	  $scope.tareasCarrera=data;
-	  $scope.mensaje=data;
+	}).
+	error(function(data, status, headers, config) {
+	  $scope.mensaje="error";
+	});
+   };
+   
+   //Funcion que busca las tareas que hay para una carrera dada.
+      $scope.fetchTareasCompletadas=function(a,b){
+	$scope.requisitosCarrera=[];
+	$scope.requisitos=[];
+	$scope.numcarract="";
+	$scope.mensajeCarrerasVacias="";
+	$scope.mensajeReqsVacios="";
+	$scope.tareasCarreraC=[];
+	$scope.carreraActual=a;
+	$scope.numcarract=b;
+        $scope.carrs="none";
+	$scope.at="block";
+	//$scope.tareasCarrera=["t1","t2"];
+	//Llamo a servicio que me dara las tareas de esa carrera listartareascarrera/544d176d4cb85b483264ff0a
+	var url='http://0.0.0.0:4567/listartareascarreraComp/'+$scope.carreraActual;
+	$http.get(url).
+	success(function(data, status, headers, config) {
+	  $scope.tareasCarreraC=data;
 	}).
 	error(function(data, status, headers, config) {
 	  $scope.mensaje="error";
@@ -224,7 +283,10 @@ function ControladorScrum2($scope,$http) {
 //    Funcion que grega una tarea a la bd y actualiza el arreglo local.
     $scope.addTarea=function(){
       //Actualizo el arreglo
-      $scope.tareasCarrera.push({nombre:$scope.nomTarea});
+      $scope.tareasCarrera.push({nombre:$scope.nomTarea,
+                                peso:$scope.pesoTarea,
+                                estado:$scope.estadoTarea,
+                                fechaFin:$scope.fechaTarea});
       //Guardar en BD
       //Llamo al post para guardar la tarea en la BD.
       //Actualizo en la BD.
@@ -241,6 +303,8 @@ function ControladorScrum2($scope,$http) {
       $scope.pesoTarea="";
       $scope.estadoTarea="";
       $scope.fechaTarea="";
+      $scope.form="none";
+      $scope.atBoton="block";
       })
       .error(function(data,status){
 	$scope.mensaje="mal";

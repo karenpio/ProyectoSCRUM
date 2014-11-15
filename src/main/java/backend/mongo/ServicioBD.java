@@ -8,6 +8,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
+import java.util.Date;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -87,6 +88,41 @@ public class ServicioBD {
         return formatearJSON(doc);
     }
 
+    /*
+        Se borra de la bd el documento correspondiente a la tarea que se
+    quiere eliminar.
+    */
+    public JSONObject eliminarTarea(String tareaId){
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(tareaId));
+
+        DBObject doc = tarea.findOne(query);
+        tarea.remove(doc);
+
+        return formatearJSON(doc);
+    }
+    
+    /*
+        Se actualizan todos los parametros de una tarea a excepcion del nombre
+    */
+    public JSONObject actualizarTarea(JSONObject tar) {   
+        BasicDBObject nuevoDoc = new BasicDBObject();
+	nuevoDoc.append("$set", new BasicDBObject().append("peso", tar.get("peso"))
+                .append("estado", tar.get("estado"))
+                .append("fechaFin", tar.get("fechaFin")));
+        
+        System.out.println(nuevoDoc);
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(tar.get("_id").toString()));
+
+        tarea.update(query, nuevoDoc);
+        DBObject doc = tarea.findOne(query);
+
+        return formatearJSON(doc);
+    }
+    
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
      Retorna true si ya existe un proyecto con el nombre dado
@@ -278,10 +314,40 @@ public class ServicioBD {
     }
 
     /*
-     Dado el id de una carrera, buscamos dicha carrera, obtenemos
-     su lista de tareas y formamos una lista de json con dichas tareas
+        Dado el id de una carrera, buscamos dicha carrera, obtenemos
+    su lista de tareas completadas y formamos una lista de json 
+    con dichas tareas
      */
-    public JSONArray listarTareasCarrera(String carreraId) {
+    public JSONArray listarTareasCompletadasCarrera(String carreraId) {
+
+        JSONObject carr = obtenerCarrera(carreraId);
+
+        if (!carr.has("tareas")) {
+            return new JSONArray();
+        }
+
+        JSONArray listaTareasId = (JSONArray) carr.get("tareas");
+        String idTarea;
+        BasicDBList listaTarea = new BasicDBList();
+
+        BasicDBObject query = new BasicDBObject();
+
+        for (int i = 0; i < listaTareasId.length(); i++) {
+            idTarea = listaTareasId.getJSONObject(i).get("$oid").toString();
+            query.put("_id", new ObjectId(idTarea));
+            DBObject tareaSeleccionada = tarea.findOne(query);
+
+            if ("Completada".equals(tareaSeleccionada.get("estado").toString())){
+                listaTarea.add(obtenerTarea(idTarea));
+            }            
+        }
+
+        JSONArray resultado = new JSONArray(listaTarea);
+        return resultado;
+
+    }
+    
+        public JSONArray listarTareasCarrera(String carreraId) {
 
         JSONObject carr = obtenerCarrera(carreraId);
 
@@ -493,6 +559,40 @@ public class ServicioBD {
         ObjectId idTarea = new ObjectId(tareaId);
         if (!lista.contains(idTarea)) {
             lista.add(idTarea);
+            carr.put("tareas", lista);
+            carrera.save(carr);
+        }
+
+        return formatearJSON(carr);
+    }
+
+    public JSONObject desasociarTareaCarrera(String carreraId, String tareaId) {
+        BasicDBList lista;
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(carreraId));
+
+        DBObject carr = carrera.findOne(query);
+
+        // Se revisa si se encontro la carrera
+        if (carr == null) {
+            JSONObject result = new JSONObject();
+            result.put("error", "INVALID_ID");
+            return result;
+        }
+
+        // Se revisa si la carrera ya tiene requisitos asociados.
+        if (carr.containsField("tareas")) {
+            lista = (BasicDBList) carr.get("tareas");
+
+        } else {
+            lista = new BasicDBList();
+
+        }
+
+        // Se revisa si la carrera tiene a ese requisito para eliminarlo.
+        ObjectId idTarea = new ObjectId(tareaId);
+        if (lista.contains(idTarea)) {
+            lista.remove(idTarea);
             carr.put("tareas", lista);
             carrera.save(carr);
         }

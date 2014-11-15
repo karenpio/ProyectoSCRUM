@@ -109,6 +109,8 @@ public class Spark {
                 return listaReq;
             }
         });
+        
+        
 
         /*
          Dado un id de carrera pasado por url, buscamos todos las tareas
@@ -125,16 +127,19 @@ public class Spark {
             }
         });
         
-         /*
-         Dado un id de carrera pasado por url, buscamos todas las tareas completadas
-         que estan asociadas a ella y devolvemos una lista de json de tareas
+
+        /*
+         Dado un id de carrera, buscamos todos las tareas que estan asociados a ella 
+         cuyo estado sea "Completada" y devolvemos una lista de json de tareas
          */
-        get(new Route("/listartareascarreraComp/:idCarrera") {
+        get(new Route("/listartareascompletadascarrera/:idCarrera") {
+
             @Override
             public Object handle(Request request, Response response) {
                 String idCarr = request.params(":idCarrera");
 
-                JSONArray listaTareas = servicioBDProyecto.listarTareasCarrera(idCarr);
+
+                JSONArray listaTareas = servicioBDProyecto.listarTareasCompletadasCarrera(idCarr);
 
                 return listaTareas;
             }
@@ -355,6 +360,64 @@ public class Spark {
                 return doc;
             }
         });
+        
+        /*
+            Se actualiza una tarea a partir de los datos que se reciben sobre la misma.
+            Se pueden actualizar todos los parametros menos el nombre
+        */
+        put(new Route("/actualizartarea") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idTar = request.queryParams("tareaId");
+                String peso = request.queryParams("peso");
+                String estado = request.queryParams("estado");
+                String fechaFin = request.queryParams("fechaFin");
+
+                JSONObject doc;
+                JSONObject tarea = new JSONObject();
+
+                tarea.put("_id", idTar);
+                tarea.put("peso", peso);
+                tarea.put("estado", estado);
+                tarea.put("fechaFin", fechaFin);
+
+                doc = servicioBDProyecto.actualizarTarea(tarea);
+
+                return doc;
+            }
+        });
+        
+        /*
+            Desasociar una tarea de una carrera y eliminar la tarea de la bd, ya que
+        la tarea sola no existe.
+        */
+        put(new Route("/desasociartareacarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.queryParams("carreraId");
+                String idTar = request.queryParams("tareaId");
+
+                JSONObject carrera = servicioBDProyecto.desasociarTareaCarrera(idCarr, idTar);
+                
+                JSONObject doc = servicioBDProyecto.eliminarTarea(idTar);
+                if (carrera.has("error")) {
+                    response.status(404);
+                    return carrera;
+                }
+                if (carrera.has("requisitos")) {
+                    JSONArray auxList = carrera.getJSONArray("requisitos");
+                    carrera.put("requisitos", limpiarListaId(auxList));
+                }
+                if (carrera.has("tareas")) {
+                    JSONArray auxList = carrera.getJSONArray("tareas");
+                    carrera.put("tareas", limpiarListaId(auxList));
+                }
+                return carrera;
+
+            }
+        });
+        
+
 
         /*
          Dado un _id de proyecto y un email de participante, se actualiza el proyecto

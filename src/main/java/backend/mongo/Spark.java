@@ -109,6 +109,8 @@ public class Spark {
                 return listaReq;
             }
         });
+        
+        
 
         /*
          Dado un id de carrera pasado por url, buscamos todos las tareas
@@ -120,6 +122,21 @@ public class Spark {
                 String idCarr = request.params(":idCarrera");
 
                 JSONArray listaTareas = servicioBDProyecto.listarTareasCarrera(idCarr);
+
+                return listaTareas;
+            }
+        });
+        
+        /*
+         Dado un id de carrera, buscamos todos las tareas que estan asociados a ella 
+         cuyo estado sea "Completada" y devolvemos una lista de json de tareas
+         */
+        get(new Route("/listartareascompletadascarrera/:idCarrera") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idCarr = request.params(":idCarrera");
+
+                JSONArray listaTareas = servicioBDProyecto.listarTareasCompletadasCarrera(idCarr);
 
                 return listaTareas;
             }

@@ -314,10 +314,40 @@ public class ServicioBD {
     }
 
     /*
-     Dado el id de una carrera, buscamos dicha carrera, obtenemos
-     su lista de tareas y formamos una lista de json con dichas tareas
+        Dado el id de una carrera, buscamos dicha carrera, obtenemos
+    su lista de tareas completadas y formamos una lista de json 
+    con dichas tareas
      */
-    public JSONArray listarTareasCarrera(String carreraId) {
+    public JSONArray listarTareasCompletadasCarrera(String carreraId) {
+
+        JSONObject carr = obtenerCarrera(carreraId);
+
+        if (!carr.has("tareas")) {
+            return new JSONArray();
+        }
+
+        JSONArray listaTareasId = (JSONArray) carr.get("tareas");
+        String idTarea;
+        BasicDBList listaTarea = new BasicDBList();
+
+        BasicDBObject query = new BasicDBObject();
+
+        for (int i = 0; i < listaTareasId.length(); i++) {
+            idTarea = listaTareasId.getJSONObject(i).get("$oid").toString();
+            query.put("_id", new ObjectId(idTarea));
+            DBObject tareaSeleccionada = tarea.findOne(query);
+
+            if ("Completada".equals(tareaSeleccionada.get("estado").toString())){
+                listaTarea.add(obtenerTarea(idTarea));
+            }            
+        }
+
+        JSONArray resultado = new JSONArray(listaTarea);
+        return resultado;
+
+    }
+    
+        public JSONArray listarTareasCarrera(String carreraId) {
 
         JSONObject carr = obtenerCarrera(carreraId);
 

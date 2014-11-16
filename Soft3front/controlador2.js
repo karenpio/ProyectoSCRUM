@@ -15,6 +15,8 @@ function ControladorScrum2($scope,$http) {
   $scope.pacnom="";
   $scope.atBoton = "block";
   $scope.form ="none";
+  $scope.formMod="none";
+  $scope.tabla ="none";
   
 //   Funcion de regreso: inicializa todas las variables a su estado inicial.
   $scope.volverHome=function(){
@@ -244,6 +246,7 @@ function ControladorScrum2($scope,$http) {
 	$scope.numcarract=b;
         $scope.carrs="none";
 	$scope.at="block";
+        $scope.tabla ="block";
 	//$scope.tareasCarrera=["t1","t2"];
 	//Llamo a servicio que me dara las tareas de esa carrera listartareascarrera/544d176d4cb85b483264ff0a
 	var url='http://0.0.0.0:4567/listartareascarrera/'+$scope.carreraActual;
@@ -268,9 +271,9 @@ function ControladorScrum2($scope,$http) {
 	$scope.numcarract=b;
         $scope.carrs="none";
 	$scope.at="block";
-	//$scope.tareasCarrera=["t1","t2"];
-	//Llamo a servicio que me dara las tareas de esa carrera listartareascarrera/544d176d4cb85b483264ff0a
-	var url='http://0.0.0.0:4567/listartareascarreraComp/'+$scope.carreraActual;
+        
+
+	var url='http://0.0.0.0:4567/listartareascompletadascarrera/'+$scope.carreraActual;
 	$http.get(url).
 	success(function(data, status, headers, config) {
 	  $scope.tareasCarreraC=data;
@@ -283,10 +286,7 @@ function ControladorScrum2($scope,$http) {
 //    Funcion que grega una tarea a la bd y actualiza el arreglo local.
     $scope.addTarea=function(){
       //Actualizo el arreglo
-      $scope.tareasCarrera.push({nombre:$scope.nomTarea,
-                                peso:$scope.pesoTarea,
-                                estado:$scope.estadoTarea,
-                                fechaFin:$scope.fechaTarea});
+      
       //Guardar en BD
       //Llamo al post para guardar la tarea en la BD.
       //Actualizo en la BD.
@@ -299,6 +299,11 @@ function ControladorScrum2($scope,$http) {
 	  data: "nombre="+$scope.nomTarea+"&peso="+$scope.pesoTarea+"&estado="+$scope.estadoTarea+"&fechaFin="+$scope.fechaTarea+"&carreraId="+$scope.carreraActual,
 	  headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
       }).success(function(data){
+      $scope.tareasCarrera.push({nombre:$scope.nomTarea,
+                                peso:$scope.pesoTarea,
+                                estado:$scope.estadoTarea,
+                                fechaFin:$scope.fechaTarea,
+                                _id:data._id});
 	  $scope.nomTarea="";
       $scope.pesoTarea="";
       $scope.estadoTarea="";
@@ -309,10 +314,97 @@ function ControladorScrum2($scope,$http) {
       .error(function(data,status){
 	$scope.mensaje="mal";
       });
+      
+
 	
    };
    
+   $scope.mostrarFormModificarTarea=function(tarea){
+       $scope.formMod ="block";
+       $scope.tabla ="none";
+       $scope.form ="none";
+       $scope.atBoton="none";
+       $scope.tId=tarea._id;
+       $scope.nomTarea = tarea.nombre;
+       $scope.estadoTarea=tarea.estado;
+       $scope.pesoTarea=tarea.peso;
+       $scope.fechaTarea=tarea.fechaFin;
+
+       
+   };
+   
+   $scope.modificarTarea=function(){
+       
+          $scope.form="none";
+          $scope.formMod="none";
+          $scope.tabla ="block";
+          $scope.atBoton="block";
+	$http({
+	    method  : 'put',
+	    url     : 'http://0.0.0.0:4567/actualizartarea',
+	    data: "tareaId="+$scope.tId+"&peso="+$scope.pesoTarea+"&estado="+$scope.estadoTarea+"&fechaFin="+$scope.fechaTarea,
+	    headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+	}).success(function(data){
+          for(i=0; i<$scope.tareasCarrera.length;i++){
+              if($scope.tareasCarrera[i]._id == $scope.tId){
+                  $scope.tareasCarrera[i].peso = $scope.pesoTarea;
+                  $scope.tareasCarrera[i].estado = $scope.estadoTarea;
+                  $scope.tareasCarrera[i].fechaFin = $scope.fechaTarea;
+              }
+          }
+	  $scope.mensaje="";
+          $scope.nomTarea="";
+          $scope.pesoTarea="";
+          $scope.estadoTarea="";
+          $scope.fechaTarea="";
+          $scope.tId="";
+          
+	})
+	.error(function(data,status){
+	  $scope.mensaje=$scope.tareaId;
+	});
+        
+        
+       
+      
+   };
+   
+   $scope.eliminarTarea=function(tareaId){
+       $http({
+	    method  : 'put',
+	    url     : 'http://0.0.0.0:4567/desasociartareacarrera',
+	    data: "carreraId="+$scope.carreraActual+"&tareaId="+tareaId,
+	    headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+	}).success(function(data){
+          for(i=0; i<$scope.tareasCarrera.length;i++){
+              if($scope.tareasCarrera[i]._id == tareaId){
+                  $scope.tareasCarrera.splice(i,1);
+              }
+          }
+
+          
+	})
+	.error(function(data,status){
+	  $scope.mensaje=$scope.tareaId;
+	});
+       
+   };
+   
+   $scope.regresarTablaTar=function(){
+       $scope.carrs="none";
+       $scope.at="block";
+       $scope.tabla ="block";
+       $scope.formMod="none";
+       $scope.atBoton="block";
+   };
+   
    $scope.mostrarForm = function(){
+     $scope.mensaje="";
+     $scope.nomTarea="";
+     $scope.pesoTarea="";
+     $scope.estadoTarea="";
+     $scope.fechaTarea="";
+     $scope.tId="";
      $scope.atBoton = "none";
      $scope.form ="block";
    };

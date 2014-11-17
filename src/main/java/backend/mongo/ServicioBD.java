@@ -8,6 +8,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -89,11 +91,11 @@ public class ServicioBD {
     }
 
     /*
-        Se borra de la bd el documento correspondiente a la tarea que se
-    quiere eliminar.
-    */
-    public JSONObject eliminarTarea(String tareaId){
-        
+     Se borra de la bd el documento correspondiente a la tarea que se
+     quiere eliminar.
+     */
+    public JSONObject eliminarTarea(String tareaId) {
+
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(tareaId));
 
@@ -102,18 +104,18 @@ public class ServicioBD {
 
         return formatearJSON(doc);
     }
-    
+
     /*
-        Se actualizan todos los parametros de una tarea a excepcion del nombre
-    */
-    public JSONObject actualizarTarea(JSONObject tar) {   
+     Se actualizan todos los parametros de una tarea a excepcion del nombre
+     */
+    public JSONObject actualizarTarea(JSONObject tar) {
         BasicDBObject nuevoDoc = new BasicDBObject();
-	nuevoDoc.append("$set", new BasicDBObject().append("peso", tar.get("peso"))
+        nuevoDoc.append("$set", new BasicDBObject().append("peso", tar.get("peso"))
                 .append("estado", tar.get("estado"))
                 .append("fechaFin", tar.get("fechaFin")));
-        
+
         System.out.println(nuevoDoc);
-        
+
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(tar.get("_id").toString()));
 
@@ -122,7 +124,7 @@ public class ServicioBD {
 
         return formatearJSON(doc);
     }
-    
+
     /* 
      Funcion utilizada para asegurar la unicidad del nombre del proyecto
      Retorna true si ya existe un proyecto con el nombre dado
@@ -260,6 +262,64 @@ public class ServicioBD {
     }
 
     /*
+        Dado el id de un proyecto, obtenemos aquellos requisitos que esten
+        disponibles, esto es, que no esten asignados a ninguna carrera
+    */
+    public JSONArray listarRequisitosDisponiblesProyecto(String proyectoId) {
+        
+        // En esta lista se colocaran los id de requisitos no disponibles
+        ArrayList<String> requisitosNoDisponibles = new ArrayList<>();
+
+        // Obtenemos todos los requisitos del proyecto
+        JSONArray requisitosProyecto = listarRequisitosProy(proyectoId);
+        ArrayList<String> listaRequisitosString = new ArrayList<String>();
+
+        /* Convertimos el JSONArray de requisitos de proyecto a un ArrayList 
+          para poder operar sobre el
+         */  
+        if (requisitosProyecto != null) {
+            for (int i = 0; i < requisitosProyecto.length(); i++) {
+                listaRequisitosString.add(requisitosProyecto.getJSONObject(i).get("_id").toString());
+            }
+        }
+        
+        // Si el proyecto no tiene requisitos devolvemos un arreglo de JSON vacio
+        JSONObject proy = obtenerProyecto(proyectoId);
+        if (!proy.has("requisitos")) {
+            return new JSONArray();
+        }
+
+        // Si el proyecto no tiene carreras asociadas devuelve todos los requisitos
+        if (!proy.has("carreras")) {
+            return requisitosProyecto;
+        }
+
+        JSONArray listaCarreras = proy.getJSONArray("carreras");
+        
+
+        // Iterar para obtener una lista con los requisitos no disponibles
+        for (int i = 0; i < listaCarreras.length(); i++) {
+            String carrId = listaCarreras.getJSONObject(i).get("$oid").toString();
+            JSONObject carreraSeleccionada =  obtenerCarrera(carrId);
+
+            JSONArray listaRequisitosCarrera = carreraSeleccionada.getJSONArray("requisitos");
+
+            for (int j = 0; j < listaRequisitosCarrera.length(); j++) {
+                requisitosNoDisponibles.add(listaRequisitosCarrera.getJSONObject(j).get("$oid").toString());
+            }
+        }
+
+        
+        // Eliminamos los requisitos no disponibles de la lista de disponibles 
+        listaRequisitosString.removeAll(requisitosNoDisponibles);
+
+        JSONArray requisitosDisponibles = new JSONArray(Arrays.asList(listaRequisitosString));
+
+        return requisitosDisponibles;
+
+    }
+
+    /*
      Dado el id de un proyecto, buscamos dicho proyecto, obtenemos
      su lista de carreras y formamos una lista con los numeros de
      esas carreras
@@ -314,9 +374,9 @@ public class ServicioBD {
     }
 
     /*
-        Dado el id de una carrera, buscamos dicha carrera, obtenemos
-    su lista de tareas completadas y formamos una lista de json 
-    con dichas tareas
+     Dado el id de una carrera, buscamos dicha carrera, obtenemos
+     su lista de tareas completadas y formamos una lista de json 
+     con dichas tareas
      */
     public JSONArray listarTareasCompletadasCarrera(String carreraId) {
 
@@ -337,17 +397,17 @@ public class ServicioBD {
             query.put("_id", new ObjectId(idTarea));
             DBObject tareaSeleccionada = tarea.findOne(query);
 
-            if ("Completada".equals(tareaSeleccionada.get("estado").toString())){
+            if ("Completada".equals(tareaSeleccionada.get("estado").toString())) {
                 listaTarea.add(obtenerTarea(idTarea));
-            }            
+            }
         }
 
         JSONArray resultado = new JSONArray(listaTarea);
         return resultado;
 
     }
-    
-        public JSONArray listarTareasCarrera(String carreraId) {
+
+    public JSONArray listarTareasCarrera(String carreraId) {
 
         JSONObject carr = obtenerCarrera(carreraId);
 

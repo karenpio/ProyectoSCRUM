@@ -79,6 +79,24 @@ public class Spark {
                 return listaReq;
             }
         });
+        
+        
+        /*
+            Dado el id de un proyecto, devuelve todos sus requisitos disponibles,
+        esto es, que no hayan sido agregados a ninguna carrera
+        */
+        get(new Route("/listarrequisitosdisponibles/:idProyecto") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String idProy = request.params(":idProyecto");
+                
+                JSONArray listaReqDisponibles = servicioBDProyecto.listarRequisitosDisponiblesProyecto(idProy); 
+
+                return listaReqDisponibles;
+            }
+
+        });
+        
 
         /*
          Dado un id de proyecto pasado por url, buscamos todas las carreras

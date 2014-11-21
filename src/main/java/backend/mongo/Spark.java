@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
@@ -324,7 +323,7 @@ public class Spark {
 
             }
         });
-
+        
         put(new Route("/desasociarrequisitocarrera") {
             @Override
             public Object handle(Request request, Response response) {

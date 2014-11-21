@@ -10,7 +10,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -301,8 +300,8 @@ public class ServicioBD {
         for (int i = 0; i < listaCarreras.length(); i++) {
             String carrId = listaCarreras.getJSONObject(i).get("$oid").toString();
             JSONObject carreraSeleccionada =  obtenerCarrera(carrId);
-
             JSONArray listaRequisitosCarrera = carreraSeleccionada.getJSONArray("requisitos");
+            
 
             for (int j = 0; j < listaRequisitosCarrera.length(); j++) {
                 requisitosNoDisponibles.add(listaRequisitosCarrera.getJSONObject(j).get("$oid").toString());
@@ -312,8 +311,16 @@ public class ServicioBD {
         
         // Eliminamos los requisitos no disponibles de la lista de disponibles 
         listaRequisitosString.removeAll(requisitosNoDisponibles);
+        
+        // Creamos una lista de requisitos 
+        BasicDBList listaDeRequisitos = new BasicDBList();
+        
+        for (int i = 0; i < listaRequisitosString.size(); i++){
+            listaDeRequisitos.add(obtenerRequisito(listaRequisitosString.get(i)));
+            
+        }
 
-        JSONArray requisitosDisponibles = new JSONArray(Arrays.asList(listaRequisitosString));
+        JSONArray requisitosDisponibles= new JSONArray(listaDeRequisitos);
 
         return requisitosDisponibles;
 

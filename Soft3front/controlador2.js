@@ -175,16 +175,16 @@ function ControladorScrum2($scope,$http) {
 	$scope.numcarract=b;
 	$scope.carreraActual=a; //Id de la carrera con la que trabajo actualmente.	
 	//Llamada para pedir los requisitos del proyecto: listarrequisitosproyecto/544cf87f44aec7d4ee558e58
-	var url='http://0.0.0.0:4567/listarrequisitosproyecto/'+$scope.proyectoActual._id;
+	var url='http://0.0.0.0:4567/listarrequisitosdisponibles/'+$scope.proyectoActual._id;
 	$http.get(url).
 	success(function(data, status, headers, config) {
 	  if (data.length == 0){
-	    $scope.mensajeReqsVacios="Este proyecto NO tiene reqs";
+	    $scope.mensajeReqsVacios="Este proyecto no tiene requisitos disponibles.";
 	  }
 	  $scope.requisitos=data;
 	}).
 	error(function(data, status, headers, config) {
-	  $scope.mensaje="error";
+	  $scope.mensaje="error de requisitos disponibles";
 	});
 	
 	//Ahora debo pedir los requisitos para la carrera espeficamente.
@@ -215,14 +215,20 @@ function ControladorScrum2($scope,$http) {
       if (kiwi > -1){
 	//LLamada para asociar un requisito con una carrera.
 	//asociarrequisitocarrera
-	$scope.mensaje="carreraId="+$scope.carreraActual+"&requisitoId="+a._id;
 	$http({
 	    method  : 'put',
 	    url     : 'http://0.0.0.0:4567/asociarrequisitocarrera',
 	    data: "carreraId="+$scope.carreraActual+"&requisitoId="+a._id,
 	    headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
 	}).success(function(data){
-	  $scope.mensaje="";
+          for(i=0; i<$scope.requisitos.length;i++){
+              if($scope.requisitos[i]._id == a._id){
+                  $scope.requisitos.splice(i,1);
+              }
+          }
+          if($scope.requisitos.length == 0){
+              $scope.mensajeReqsVacios="Este proyecto no tiene requisitos disponibles.";
+          }
       
 	})
 	.error(function(data,status){
@@ -367,6 +373,29 @@ function ControladorScrum2($scope,$http) {
         
        
       
+   };
+   
+   $scope.desasociarRequisitoCarrera=function(req){
+       $http({
+	    method  : 'put',
+	    url     : 'http://0.0.0.0:4567/desasociarrequisitocarrera',
+	    data: "carreraId="+$scope.carreraActual+"&requisitoId="+req._id,
+	    headers : {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+	}).success(function(data){
+          for(i=0; i<$scope.requisitosCarrera.length;i++){
+              if($scope.requisitosCarrera[i]._id == req._id){
+                  $scope.requisitosCarrera.splice(i,1);
+              }
+          }
+          $scope.mensajeReqsVacios = "";
+          $scope.requisitos.push(req);
+          
+          
+	})
+	.error(function(data,status){
+	  $scope.mensaje=$scope.tareaId;
+	});
+       
    };
    
    $scope.eliminarTarea=function(tareaId){
